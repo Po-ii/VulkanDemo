@@ -7,16 +7,19 @@ class Renderer
 {
 public:
 	void CreateInstance();
+	void pickPhysicalDevice();
 
 private:
 	vk::raii::Context context;
 	vk::raii::Instance instance = nullptr;
 	vk::raii::DebugUtilsMessengerEXT debugMessanger = nullptr;
+	vk::raii::PhysicalDevice physicalDevice = nullptr;
 	
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
 
 	void setupDebugMessanger();
+	bool isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice);
 
 	static VKAPI_ATTR vk::Bool32 VKAPI_CALL DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT,
 		vk::DebugUtilsMessageTypeFlagsEXT,

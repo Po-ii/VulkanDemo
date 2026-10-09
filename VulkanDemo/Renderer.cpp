@@ -55,8 +55,16 @@ void Renderer::CreateInstance()
 	};
 
 	instance = vk::raii::Instance(context, createInfo);
-
 	setupDebugMessanger();
+}
+
+void Renderer::pickPhysicalDevice()
+{
+	auto physicalDevices = instance.enumeratePhysicalDevices();
+	if (physicalDevices.empty())
+	{
+		throw std::runtime_error("failed to find GPUs with Vulkan support!");
+	}
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
@@ -97,6 +105,20 @@ void Renderer::setupDebugMessanger()
 	};
 
 	debugMessanger = instance.createDebugUtilsMessengerEXT(createInfo);
+}
+
+bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice)
+{
+	bool supportsVulkab14 = physicalDevice.getProperties().apiVersion >= vk::ApiVersion14;
+
+	auto deviceProperties = physicalDevice.getProperties();
+	auto deviceFeatures = physicalDevice.getFeatures();
+	if (deviceProperties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu && deviceFeatures.geometryShader)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 vk::Bool32 Renderer::DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT severity, vk::DebugUtilsMessageTypeFlagsEXT type, const vk::DebugUtilsMessengerCallbackDataEXT* data, void*)

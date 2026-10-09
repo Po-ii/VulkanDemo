@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Renderer.h"
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 
@@ -8,8 +8,9 @@ class Application
 public:
 	int width = 800;
 	int height = 600;
-
+	
 	GLFWwindow* window = nullptr;
+	Renderer renderer;
 
 	void Init();
 	void Run();

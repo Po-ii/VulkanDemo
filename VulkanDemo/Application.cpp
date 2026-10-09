@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Renderer.h"
 
 void Application::Init()
 {
@@ -30,6 +31,8 @@ void Application::InitWindow()
 
 void Application::InitVulkan()
 {
+    renderer.CreateInstance();
+    renderer.pickPhysicalDevice();
 }
 
 void Application::DestroyWindow()
