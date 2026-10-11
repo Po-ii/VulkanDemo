@@ -73,6 +73,10 @@ void Renderer::pickPhysicalDevice()
 	physicalDevice = *devIter;
 }
 
+void Renderer::createLogicalDevice()
+{
+}
+
 std::vector<char const*> Renderer::GetRequiredExtensions()
 {
 	uint32_t glfwExtensionsCount = 0;

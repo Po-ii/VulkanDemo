@@ -8,12 +8,14 @@ class Renderer
 public:
 	void CreateInstance();
 	void pickPhysicalDevice();
+	void createLogicalDevice();
 
 private:
 	vk::raii::Context context;
 	vk::raii::Instance instance = nullptr;
 	vk::raii::DebugUtilsMessengerEXT debugMessanger = nullptr;
 	vk::raii::PhysicalDevice physicalDevice = nullptr;
+	vk::raii::Device device = nullptr;
 	
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
