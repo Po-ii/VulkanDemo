@@ -17,6 +17,7 @@ private:
 	
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
+	std::vector<const char*>GetRequiredDeviceExtensions();
 
 	void setupDebugMessanger();
 	bool isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice);

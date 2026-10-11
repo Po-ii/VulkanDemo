@@ -19,9 +19,9 @@ void Renderer::CreateInstance()
 	for (uint32_t i = 0; i < requiredExtensions.size(); i++)
 	{
 		auto predicate = [extension = requiredExtensions[i]](auto const& extensionProperty)
-		{
-			return strcmp(extensionProperty.extensionName, extension) == 0;
-		};
+			{
+				return strcmp(extensionProperty.extensionName, extension) == 0;
+			};
 
 		if (std::ranges::none_of(extensionProperties, predicate))
 		{
@@ -32,12 +32,12 @@ void Renderer::CreateInstance()
 	std::vector requiredLayers = GetRequiredLayers();
 	auto layerProperties = context.enumerateInstanceLayerProperties();
 	auto predicate_layer = [&layerProperties](auto const& requiredLayer)
-	{
-		return std::ranges::none_of(layerProperties, [requiredLayer](auto const& layerProperty)
 		{
-			return strcmp(layerProperty.layerName, requiredLayer) == 0;
-		});
-	};
+			return std::ranges::none_of(layerProperties, [requiredLayer](auto const& layerProperty)
+				{
+					return strcmp(layerProperty.layerName, requiredLayer) == 0;
+				});
+		};
 
 	auto unsupportedLayerIt = std::ranges::find_if(requiredLayers, predicate_layer);
 	if (unsupportedLayerIt != requiredLayers.end())
@@ -60,11 +60,17 @@ void Renderer::CreateInstance()
 
 void Renderer::pickPhysicalDevice()
 {
-	auto physicalDevices = instance.enumeratePhysicalDevices();
-	if (physicalDevices.empty())
+	std::vector<vk::raii::PhysicalDevice> physicalDevices = instance.enumeratePhysicalDevices();
+	auto const devIter = std::ranges::find_if(physicalDevices, [this](auto const& physicalDevice)
+		{
+			return isDeviceSuitable(physicalDevice);
+		});
+	if (devIter == physicalDevices.end())
 	{
-		throw std::runtime_error("failed to find GPUs with Vulkan support!");
+		throw std::runtime_error("failed to find a suitable GPU!");
 	}
+
+	physicalDevice = *devIter;
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
@@ -92,6 +98,11 @@ std::vector<char const*> Renderer::GetRequiredLayers()
 	return requiredLayers;
 }
 
+std::vector<const char*> Renderer::GetRequiredDeviceExtensions()
+{
+	return { vk::KHRSwapchainExtensionName };
+}
+
 void Renderer::setupDebugMessanger()
 {
 	vk::DebugUtilsMessageSeverityFlagsEXT severityFlags(vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError);
@@ -109,16 +120,32 @@ void Renderer::setupDebugMessanger()
 
 bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice)
 {
-	bool supportsVulkab14 = physicalDevice.getProperties().apiVersion >= vk::ApiVersion14;
+	bool supportsVulkan13 = physicalDevice.getProperties().apiVersion >= vk::ApiVersion13;
 
-	auto deviceProperties = physicalDevice.getProperties();
-	auto deviceFeatures = physicalDevice.getFeatures();
-	if (deviceProperties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu && deviceFeatures.geometryShader)
-	{
-		return true;
-	}
+	auto queueFamilies = physicalDevice.getQueueFamilyProperties();
+	bool supportsGraphics = std::ranges::any_of(queueFamilies, [](auto const& qfp)
+		{
+			return !!(qfp.queueFlags & vk::QueueFlagBits::eGraphics);
+		});
 
-	return false;
+	auto availableExtensions = physicalDevice.enumerateDeviceExtensionProperties();
+	bool supportsAllRequiredExtensions = std::ranges::all_of(GetRequiredDeviceExtensions(), [&availableExtensions](auto const& requiredDeviceExtension)
+		{
+			return std::ranges::any_of(availableExtensions, [&requiredDeviceExtension](auto const& availableDeviceExtension)
+				{
+					return strcmp(availableDeviceExtension.extensionName, requiredDeviceExtension) == 0;
+				});
+		});
+
+	auto features = physicalDevice.template getFeatures2<vk::PhysicalDeviceFeatures2,
+		vk::PhysicalDeviceVulkan11Features,
+		vk::PhysicalDeviceVulkan13Features,
+		vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>();
+	bool supportsRequiredFeatures = features.template get<vk::PhysicalDeviceVulkan11Features>().shaderDrawParameters &&
+		features.template get<vk::PhysicalDeviceVulkan13Features>().dynamicRendering &&
+		features.template get<vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>().extendedDynamicState;
+
+	return supportsVulkan13 && supportsGraphics && supportsAllRequiredExtensions && supportsRequiredFeatures;
 }
 
 vk::Bool32 Renderer::DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT severity, vk::DebugUtilsMessageTypeFlagsEXT type, const vk::DebugUtilsMessengerCallbackDataEXT* data, void*)
@@ -128,6 +155,3 @@ vk::Bool32 Renderer::DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT seve
 
 	return vk::False;
 }
-
-
-
