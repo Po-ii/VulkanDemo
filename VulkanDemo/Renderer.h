@@ -25,7 +25,7 @@ private:
 	std::vector<char const*>GetRequiredLayers();
 	std::vector<const char*>GetRequiredDeviceExtensions();
 
-	void setupDebugMessanger();
+	void setupDebugMessenger();
 	bool isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice);
 
 	static VKAPI_ATTR vk::Bool32 VKAPI_CALL DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT,

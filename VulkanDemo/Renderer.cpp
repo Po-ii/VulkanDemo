@@ -55,7 +55,7 @@ void Renderer::CreateInstance()
 	};
 
 	instance = vk::raii::Instance(context, createInfo);
-	setupDebugMessanger();
+	setupDebugMessenger();
 }
 
 void Renderer::pickPhysicalDevice()
@@ -151,7 +151,7 @@ std::vector<char const*> Renderer::GetRequiredLayers()
 //	return { vk::KHRSwapchainExtensionName };
 }*/
 
-void Renderer::setupDebugMessanger()
+void Renderer::setupDebugMessenger()
 {
 	vk::DebugUtilsMessageSeverityFlagsEXT severityFlags(vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError);
 	vk::DebugUtilsMessageTypeFlagsEXT TypeFlags(vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
