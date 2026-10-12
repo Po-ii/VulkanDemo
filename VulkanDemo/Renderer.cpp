@@ -75,6 +75,46 @@ void Renderer::pickPhysicalDevice()
 
 void Renderer::createLogicalDevice()
 {
+	float queuePriority = 0.5f;
+	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
+
+	std::vector<vk::QueueFamilyProperties> queueFamilyProperties = physicalDevice.getQueueFamilyProperties();
+	auto graphicsQueueFamilyProperty = std::ranges::find_if(queueFamilyProperties, [](auto const& qfp)
+		{
+			return (qfp.queueFlags & vk::QueueFlagBits::eGraphics) != static_cast<vk::QueueFlags>(0);
+		});
+
+	auto graphicIndex = static_cast<uint32_t>(std::distance(queueFamilyProperties.begin(), graphicsQueueFamilyProperty));
+	vk::DeviceQueueCreateInfo deviceQueueCreateInfo
+	{
+		.queueFamilyIndex = graphicIndex,
+		.queueCount = 1,
+		.pQueuePriorities = &queuePriority
+	};
+
+	vk::StructureChain<vk::PhysicalDeviceFeatures2,
+		vk::PhysicalDeviceVulkan11Features,
+		vk::PhysicalDeviceVulkan13Features,
+		vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>
+		featureChain =
+	{
+		{},
+		{.shaderDrawParameters = true},
+		{.dynamicRendering = true},
+		{.extendedDynamicState = true}
+	};
+
+	vk::DeviceCreateInfo deviceCreateInfo
+	{
+		.pNext = &featureChain.get<vk::PhysicalDeviceFeatures2>(),
+		.queueCreateInfoCount = 1,
+		.pQueueCreateInfos = &deviceQueueCreateInfo,
+		.enabledLayerCount = static_cast<uint32_t>(requiredDeviceExtension.size()),
+		.ppEnabledExtensionNames = requiredDeviceExtension.data()
+	};
+
+	device = vk::raii::Device(physicalDevice, deviceCreateInfo);
+	graphicsQueue = vk::raii::Queue(device, graphicIndex, 0);
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
@@ -102,10 +142,10 @@ std::vector<char const*> Renderer::GetRequiredLayers()
 	return requiredLayers;
 }
 
-std::vector<const char*> Renderer::GetRequiredDeviceExtensions()
-{
-	return { vk::KHRSwapchainExtensionName };
-}
+/*std::vector<const char*> Renderer::GetRequiredDeviceExtensions()
+//{
+//	return { vk::KHRSwapchainExtensionName };
+}*/
 
 void Renderer::setupDebugMessanger()
 {
@@ -124,6 +164,7 @@ void Renderer::setupDebugMessanger()
 
 bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice)
 {
+	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	bool supportsVulkan13 = physicalDevice.getProperties().apiVersion >= vk::ApiVersion13;
 
 	auto queueFamilies = physicalDevice.getQueueFamilyProperties();
@@ -133,7 +174,7 @@ bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice)
 		});
 
 	auto availableExtensions = physicalDevice.enumerateDeviceExtensionProperties();
-	bool supportsAllRequiredExtensions = std::ranges::all_of(GetRequiredDeviceExtensions(), [&availableExtensions](auto const& requiredDeviceExtension)
+	bool supportsAllRequiredExtensions = std::ranges::all_of(requiredDeviceExtension, [&availableExtensions](auto const& requiredDeviceExtension)
 		{
 			return std::ranges::any_of(availableExtensions, [&requiredDeviceExtension](auto const& availableDeviceExtension)
 				{

@@ -16,6 +16,8 @@ private:
 	vk::raii::DebugUtilsMessengerEXT debugMessanger = nullptr;
 	vk::raii::PhysicalDevice physicalDevice = nullptr;
 	vk::raii::Device device = nullptr;
+	vk::PhysicalDeviceFeatures deviceFeatures;
+	vk::raii::Queue graphicsQueue = nullptr;
 	
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
