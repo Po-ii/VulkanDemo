@@ -117,6 +117,10 @@ void Renderer::createLogicalDevice()
 	graphicsQueue = vk::raii::Queue(device, graphicIndex, 0);
 }
 
+void Renderer::createSurface()
+{
+}
+
 std::vector<char const*> Renderer::GetRequiredExtensions()
 {
 	uint32_t glfwExtensionsCount = 0;

@@ -9,6 +9,7 @@ public:
 	void CreateInstance();
 	void pickPhysicalDevice();
 	void createLogicalDevice();
+	void createSurface();
 
 private:
 	vk::raii::Context context;
@@ -18,6 +19,7 @@ private:
 	vk::raii::Device device = nullptr;
 	vk::PhysicalDeviceFeatures deviceFeatures;
 	vk::raii::Queue graphicsQueue = nullptr;
+	vk::raii::SurfaceKHR surface = nullptr;
 	
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
