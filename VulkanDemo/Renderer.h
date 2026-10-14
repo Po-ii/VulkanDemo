@@ -14,6 +14,7 @@ public:
 	void pickPhysicalDevice();
 	void createLogicalDevice();
 	void createSurface(GLFWwindow* window);
+	void createSwapChain();
 
 private:
 	vk::raii::Context context;
@@ -29,6 +30,10 @@ private:
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
 	std::vector<const char*>GetRequiredDeviceExtensions();
+
+	vk::SurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<vk::SurfaceFormatKHR> const& availableFormats);
+	vk::PresentModeKHR chooseSwapPresentMode(std::vector<vk::PresentModeKHR> const& availablePresentModes);
+	vk::Extent2D chooseSwapExtent(vk::SurfaceCapabilitiesKHR const& capabilities);
 
 	void setupDebugMessenger();
 	bool isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice);

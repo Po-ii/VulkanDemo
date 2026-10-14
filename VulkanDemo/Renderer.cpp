@@ -129,6 +129,10 @@ void Renderer::createSurface(GLFWwindow* window)
 	surface = vk::raii::SurfaceKHR(instance, _surface);
 }
 
+void Renderer::createSwapChain()
+{
+}
+
 std::vector<char const*> Renderer::GetRequiredExtensions()
 {
 	uint32_t glfwExtensionsCount = 0;
@@ -152,6 +156,21 @@ std::vector<char const*> Renderer::GetRequiredLayers()
 		requiredLayers.append_range(validationLayers);
 
 	return requiredLayers;
+}
+
+vk::SurfaceFormatKHR Renderer::chooseSwapSurfaceFormat(std::vector<vk::SurfaceFormatKHR> const& availableFormats)
+{
+
+}
+
+vk::PresentModeKHR Renderer::chooseSwapPresentMode(std::vector<vk::PresentModeKHR> const& availablePresentModes)
+{
+
+}
+
+vk::Extent2D Renderer::chooseSwapExtent(vk::SurfaceCapabilitiesKHR const& capabilities)
+{
+
 }
 
 void Renderer::setupDebugMessenger()
