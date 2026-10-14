@@ -1,7 +1,11 @@
 #pragma once
+#define VK_USE_PLATFORM_WIN32_KHR
+#define GLFW_INCLUDE_VULKAN
 #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #include "vulkan/vulkan_raii.hpp"
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 
 class Renderer
 {
@@ -9,7 +13,7 @@ public:
 	void CreateInstance();
 	void pickPhysicalDevice();
 	void createLogicalDevice();
-	void createSurface();
+	void createSurface(GLFWwindow* window);
 
 private:
 	vk::raii::Context context;
@@ -21,6 +25,7 @@ private:
 	vk::raii::Queue graphicsQueue = nullptr;
 	vk::raii::SurfaceKHR surface = nullptr;
 	
+	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();
 	std::vector<const char*>GetRequiredDeviceExtensions();

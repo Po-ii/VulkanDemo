@@ -75,22 +75,21 @@ void Renderer::pickPhysicalDevice()
 
 void Renderer::createLogicalDevice()
 {
-	float queuePriority = 0.5f;
-	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
-
 	std::vector<vk::QueueFamilyProperties> queueFamilyProperties = physicalDevice.getQueueFamilyProperties();
-	auto graphicsQueueFamilyProperty = std::ranges::find_if(queueFamilyProperties, [](auto const& qfp)
-		{
-			return (qfp.queueFlags & vk::QueueFlagBits::eGraphics) != static_cast<vk::QueueFlags>(0);
-		});
 
-	auto graphicIndex = static_cast<uint32_t>(std::distance(queueFamilyProperties.begin(), graphicsQueueFamilyProperty));
-	vk::DeviceQueueCreateInfo deviceQueueCreateInfo
+	uint32_t queueIndex = ~0;
+	for (uint32_t qfpIndex = 0; qfpIndex < queueFamilyProperties.size(); qfpIndex++)
 	{
-		.queueFamilyIndex = graphicIndex,
-		.queueCount = 1,
-		.pQueuePriorities = &queuePriority
-	};
+		if ((queueFamilyProperties[qfpIndex].queueFlags & vk::QueueFlagBits::eGraphics) && physicalDevice.getSurfaceSupportKHR(qfpIndex, *surface))
+		{
+			queueIndex = qfpIndex;
+			break;
+		}
+	}
+	if (queueIndex == ~0)
+	{
+		throw std::runtime_error("COuld not find a queue for graphics and present -> terminating");
+	}
 
 	vk::StructureChain<vk::PhysicalDeviceFeatures2,
 		vk::PhysicalDeviceVulkan11Features,
@@ -104,6 +103,8 @@ void Renderer::createLogicalDevice()
 		{.extendedDynamicState = true}
 	};
 
+	float queuePriority = 0.5f;
+	vk::DeviceQueueCreateInfo deviceQueueCreateInfo{ .queueFamilyIndex = queueIndex, .queueCount = 1, .pQueuePriorities = &queuePriority };
 	vk::DeviceCreateInfo deviceCreateInfo
 	{
 		.pNext = &featureChain.get<vk::PhysicalDeviceFeatures2>(),
@@ -114,11 +115,18 @@ void Renderer::createLogicalDevice()
 	};
 
 	device = vk::raii::Device(physicalDevice, deviceCreateInfo);
-	graphicsQueue = vk::raii::Queue(device, graphicIndex, 0);
+	graphicsQueue = vk::raii::Queue(device, queueIndex, 0);
 }
 
-void Renderer::createSurface()
+void Renderer::createSurface(GLFWwindow* window)
 {
+	VkSurfaceKHR _surface;
+	if (glfwCreateWindowSurface(*instance, window, nullptr, &_surface) != 0)
+	{
+		throw std::runtime_error("failed to create window surface!");
+	}
+	
+	surface = vk::raii::SurfaceKHR(instance, _surface);
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
@@ -146,11 +154,6 @@ std::vector<char const*> Renderer::GetRequiredLayers()
 	return requiredLayers;
 }
 
-/*std::vector<const char*> Renderer::GetRequiredDeviceExtensions()
-//{
-//	return { vk::KHRSwapchainExtensionName };
-}*/
-
 void Renderer::setupDebugMessenger()
 {
 	vk::DebugUtilsMessageSeverityFlagsEXT severityFlags(vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError);
@@ -168,7 +171,6 @@ void Renderer::setupDebugMessenger()
 
 bool Renderer::isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice)
 {
-	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	bool supportsVulkan13 = physicalDevice.getProperties().apiVersion >= vk::ApiVersion13;
 
 	auto queueFamilies = physicalDevice.getQueueFamilyProperties();

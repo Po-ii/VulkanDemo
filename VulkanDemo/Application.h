@@ -8,7 +8,7 @@ class Application
 public:
 	int width = 800;
 	int height = 600;
-	
+
 	GLFWwindow* window = nullptr;
 	Renderer renderer;
 
