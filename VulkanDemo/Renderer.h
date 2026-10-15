@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
@@ -25,6 +26,9 @@ private:
 	vk::PhysicalDeviceFeatures deviceFeatures;
 	vk::raii::Queue graphicsQueue = nullptr;
 	vk::raii::SurfaceKHR surface = nullptr;
+	vk::raii::SwapchainKHR swapChain = nullptr;
+	vk::SurfaceFormatKHR swapChainSurfaceFormat;
+	vk::Extent2D swapChainExtent;
 	
 	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	std::vector<char const*>GetRequiredExtensions();
@@ -33,10 +37,11 @@ private:
 
 	vk::SurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<vk::SurfaceFormatKHR> const& availableFormats);
 	vk::PresentModeKHR chooseSwapPresentMode(std::vector<vk::PresentModeKHR> const& availablePresentModes);
-	vk::Extent2D chooseSwapExtent(vk::SurfaceCapabilitiesKHR const& capabilities);
+	vk::Extent2D chooseSwapExtent(vk::SurfaceCapabilitiesKHR const& capabilities, GLFWwindow* window);
 
 	void setupDebugMessenger();
 	bool isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice);
+	uint32_t chooseSwapMinImageCount(vk::SurfaceCapabilitiesKHR const& surfaceCapabilities);
 
 	static VKAPI_ATTR vk::Bool32 VKAPI_CALL DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT,
 		vk::DebugUtilsMessageTypeFlagsEXT,
