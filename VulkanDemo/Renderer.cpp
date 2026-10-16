@@ -110,7 +110,7 @@ void Renderer::createLogicalDevice()
 		.pNext = &featureChain.get<vk::PhysicalDeviceFeatures2>(),
 		.queueCreateInfoCount = 1,
 		.pQueueCreateInfos = &deviceQueueCreateInfo,
-		.enabledLayerCount = static_cast<uint32_t>(requiredDeviceExtension.size()),
+		.enabledExtensionCount = static_cast<uint32_t>(requiredDeviceExtension.size()),
 		.ppEnabledExtensionNames = requiredDeviceExtension.data()
 	};
 
@@ -129,14 +129,33 @@ void Renderer::createSurface(GLFWwindow* window)
 	surface = vk::raii::SurfaceKHR(instance, _surface);
 }
 
-void Renderer::createSwapChain()
+void Renderer::createSwapChain(GLFWwindow *window)
 {
 	vk::SurfaceCapabilitiesKHR surfaceCapabilities = physicalDevice.getSurfaceCapabilitiesKHR(*surface);
-	swapChainExtent = chooseSwapExtent(surfaceCapabilities);
+	swapChainExtent = chooseSwapExtent(surfaceCapabilities, window);
 	uint32_t minImageCount = chooseSwapMinImageCount(surfaceCapabilities);
 
 	std::vector<vk::SurfaceFormatKHR> availableFormats = physicalDevice.getSurfaceFormatsKHR(*surface);
 	swapChainSurfaceFormat = chooseSwapSurfaceFormat(availableFormats);
+
+	std::vector<vk::PresentModeKHR> availablePresentModes = physicalDevice.getSurfacePresentModesKHR(*surface);
+	vk::PresentModeKHR presentMode = chooseSwapPresentMode(availablePresentModes);
+
+	vk::SwapchainCreateInfoKHR swapChainCreateInfo{ .surface = *surface,
+		.minImageCount = minImageCount,
+		.imageFormat = swapChainSurfaceFormat.format,
+		.imageColorSpace = swapChainSurfaceFormat.colorSpace,
+		.imageExtent = swapChainExtent,
+		.imageUsage = vk::ImageUsageFlagBits::eColorAttachment,
+		.imageSharingMode = vk::SharingMode::eExclusive,
+		.preTransform = surfaceCapabilities.currentTransform,
+		.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque,
+		.presentMode = presentMode,
+		.clipped = true
+	};
+
+	swapChain = vk::raii::SwapchainKHR(device, swapChainCreateInfo);
+	swapChainImages = swapChain.getImages();
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
