@@ -17,6 +17,7 @@ public:
 	void createSurface(GLFWwindow* window);
 	void createSwapChain(GLFWwindow *window);
 	void createImageViews();
+	void createGraphicPipeline();
 
 private:
 	vk::raii::Context context;
@@ -45,6 +46,8 @@ private:
 	void setupDebugMessenger();
 	bool isDeviceSuitable(vk::raii::PhysicalDevice const& physicalDevice);
 	uint32_t chooseSwapMinImageCount(vk::SurfaceCapabilitiesKHR const& surfaceCapabilities);
+	[[nodiscard]] vk::raii::ShaderModule createShaderModule(const std::vector<char>& code) const;
+	static std::vector<char> readFile(const std::string& filename);
 
 	static VKAPI_ATTR vk::Bool32 VKAPI_CALL DebugCallback(vk::DebugUtilsMessageSeverityFlagBitsEXT,
 		vk::DebugUtilsMessageTypeFlagsEXT,
