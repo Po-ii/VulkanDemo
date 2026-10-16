@@ -34,6 +34,7 @@ void Application::InitVulkan()
     renderer.createSurface(window);
     renderer.pickPhysicalDevice();
 	renderer.createLogicalDevice();
+    renderer.createImageViews();
 }
 
 void Application::DestroyWindow()

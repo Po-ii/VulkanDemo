@@ -16,6 +16,7 @@ public:
 	void createLogicalDevice();
 	void createSurface(GLFWwindow* window);
 	void createSwapChain(GLFWwindow *window);
+	void createImageViews();
 
 private:
 	vk::raii::Context context;
@@ -30,6 +31,7 @@ private:
 	std::vector<vk::Image> swapChainImages;
 	vk::SurfaceFormatKHR swapChainSurfaceFormat;
 	vk::Extent2D swapChainExtent;
+	std::vector<vk::raii::ImageView> swapChainImageViews;
 	
 	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	std::vector<char const*>GetRequiredExtensions();

@@ -141,7 +141,8 @@ void Renderer::createSwapChain(GLFWwindow *window)
 	std::vector<vk::PresentModeKHR> availablePresentModes = physicalDevice.getSurfacePresentModesKHR(*surface);
 	vk::PresentModeKHR presentMode = chooseSwapPresentMode(availablePresentModes);
 
-	vk::SwapchainCreateInfoKHR swapChainCreateInfo{ .surface = *surface,
+	vk::SwapchainCreateInfoKHR swapChainCreateInfo
+	{	.surface = *surface,
 		.minImageCount = minImageCount,
 		.imageFormat = swapChainSurfaceFormat.format,
 		.imageColorSpace = swapChainSurfaceFormat.colorSpace,
@@ -156,6 +157,23 @@ void Renderer::createSwapChain(GLFWwindow *window)
 
 	swapChain = vk::raii::SwapchainKHR(device, swapChainCreateInfo);
 	swapChainImages = swapChain.getImages();
+}
+
+void Renderer::createImageViews()
+{
+	assert(swapChainImageViews.empty());
+	vk::ImageViewCreateInfo imageViewCreateInfo
+	{
+		.viewType = vk::ImageViewType::e2D,
+		.format = swapChainSurfaceFormat.format,
+		.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1}
+	};
+
+	for (auto& image : swapChainImages)
+	{
+		imageViewCreateInfo.image = image;
+		swapChainImageViews.emplace_back(device, imageViewCreateInfo);
+	}
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
