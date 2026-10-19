@@ -10,6 +10,7 @@ void Application::Run()
 {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+        renderer.drawFrame();
     }
 }
 
@@ -34,8 +35,12 @@ void Application::InitVulkan()
     renderer.createSurface(window);
     renderer.pickPhysicalDevice();
 	renderer.createLogicalDevice();
+    renderer.createSwapChain(window);
     renderer.createImageViews();
     renderer.createGraphicPipeline();
+    renderer.createCommandPool();
+    renderer.createCommandBuffer();
+    renderer.createSyncObjects();
 }
 
 void Application::DestroyWindow()
