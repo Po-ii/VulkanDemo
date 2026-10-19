@@ -33,6 +33,7 @@ private:
 	vk::SurfaceFormatKHR swapChainSurfaceFormat;
 	vk::Extent2D swapChainExtent;
 	std::vector<vk::raii::ImageView> swapChainImageViews;
+	vk::raii::PipelineLayout pipelineLayout = nullptr;
 	
 	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	std::vector<char const*>GetRequiredExtensions();
