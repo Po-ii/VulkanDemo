@@ -22,8 +22,7 @@ public:
 	void createCommandBuffer();
 	void createSyncObjects();
 	void drawFrame();
-
-	vk::raii::Device& getDevice();
+	void cleanupSwapChain();
 
 private:
 	vk::raii::Context context;
@@ -63,6 +62,7 @@ private:
 	[[nodiscard]] vk::raii::ShaderModule createShaderModule(const std::vector<char>& code) const;
 	static std::vector<char> readFile(const std::string& filename);
 	void recordCommandBuffer(uint32_t imageIndex);
+	void recreateSwapChain(GLFWwindow* window);
 	void transition_image_layout(
 		uint32_t imageIndex,
 		vk::ImageLayout  old_layout,

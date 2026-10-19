@@ -293,9 +293,10 @@ void Renderer::drawFrame()
 	result = queue.presentKHR(presentInfoKHR);
 }
 
-vk::raii::Device& Renderer::getDevice()
+void Renderer::cleanupSwapChain() 
 {
-	return device;
+	swapChainImageViews.clear();
+	swapChain = nullptr;
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
@@ -483,6 +484,14 @@ void Renderer::recordCommandBuffer(uint32_t imageIndex)
 	);
 	
 	commandBuffer.end();
+}
+
+void Renderer::recreateSwapChain(GLFWwindow* window)
+{
+	device.waitIdle();
+	cleanupSwapChain();
+	createSwapChain(window);
+	createImageViews();
 }
 
 void Renderer::	transition_image_layout(uint32_t imageIndex, vk::ImageLayout old_layout, vk::ImageLayout new_layout, vk::AccessFlags2 src_access_mask, vk::AccessFlags2 dst_access_mask, vk::PipelineStageFlags2 src_stage_mask, vk::PipelineStageFlags2 dst_stage_mask)

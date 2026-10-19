@@ -45,6 +45,7 @@ void Application::InitVulkan()
 
 void Application::DestroyWindow()
 {
+    renderer.cleanupSwapChain();
     glfwDestroyWindow(window);
     glfwTerminate();
 }
