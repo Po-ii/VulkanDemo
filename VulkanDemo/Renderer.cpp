@@ -186,7 +186,7 @@ void Renderer::createGraphicPipeline()
 	vk::PipelineShaderStageCreateInfo fragShaderStageInfo{.stage = vk::ShaderStageFlagBits::eFragment, .module = shaderModule, .pName = "fragMain"};
 	vk::PipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
-	vk::PipelineVertexInputStateCreateInfo VertexInputInfo;
+	vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
 
 	std::vector<vk::DynamicState> dynamicStates = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
 	vk::PipelineDynamicStateCreateInfo dynamicState{ .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()), .pDynamicStates = dynamicStates.data() };
@@ -218,6 +218,22 @@ void Renderer::createGraphicPipeline()
 
 	vk::PipelineLayoutCreateInfo pipelineLayoutInfo{ .setLayoutCount = 0, .pushConstantRangeCount = 0 };
 	pipelineLayout = vk::raii::PipelineLayout(device, pipelineLayoutInfo);
+
+	vk::PipelineRenderingCreateInfo pipelineRenderingCreateInfo{ .colorAttachmentCount = 1, .pColorAttachmentFormats = &swapChainSurfaceFormat.format };
+	vk::StructureChain<vk::GraphicsPipelineCreateInfo, vk::PipelineRenderingCreateInfo> pipelineCreateInfoChain = {
+	{.stageCount = 2,
+	 .pStages = shaderStages,
+	 .pVertexInputState = &vertexInputInfo,
+	 .pInputAssemblyState = &inputAssembly,
+	 .pViewportState = &viewportState,
+	 .pRasterizationState = &rasterizer,
+	 .pMultisampleState = &multisampling,
+	 .pColorBlendState = &colorBlending,
+	 .pDynamicState = &dynamicState,
+	 .layout = pipelineLayout,
+	 .renderPass = nullptr},
+	{.colorAttachmentCount = 1, .pColorAttachmentFormats = &swapChainSurfaceFormat.format} };
+	graphicPipeline = vk::raii::Pipeline(device, nullptr, pipelineCreateInfoChain.get<vk::GraphicsPipelineCreateInfo>());
 
 }
 
