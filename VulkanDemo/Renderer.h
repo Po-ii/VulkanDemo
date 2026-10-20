@@ -21,8 +21,10 @@ public:
 	void createCommandPool();
 	void createCommandBuffers();
 	void createSyncObjects();
-	void drawFrame();
+	void drawFrame(GLFWwindow* window);
 	void cleanupSwapChain();
+	void waitIdle();
+	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
 	vk::raii::Context context;
@@ -49,6 +51,7 @@ private:
 	uint32_t frameIndex = 0;
 
 	static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+	bool framebufferResized = false;
 
 	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	std::vector<char const*>GetRequiredExtensions();

@@ -264,16 +264,27 @@ void Renderer::createSyncObjects()
 	}
 }
 
-void Renderer::drawFrame()
+void Renderer::drawFrame(GLFWwindow* window)
 {
 	auto fenceResult = device.waitForFences(*inFlightFences[frameIndex], vk::True, UINT64_MAX);
 	if (fenceResult != vk::Result::eSuccess)
 	{
 		throw std::runtime_error("failed to wait for fence!");
 	}
-	device.resetFences(*inFlightFences[frameIndex]);
 
 	auto [result, imageIndex] = swapChain.acquireNextImage(UINT64_MAX, *presentCompleteSemaphores[frameIndex], nullptr);
+	if (result == vk::Result::eErrorOutOfDateKHR)
+	{
+		recreateSwapChain(window);
+		return;
+	}
+	if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
+	{
+		assert(result == vk::Result::eTimeout || result == vk::Result::eNotReady);
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
+
+	device.resetFences(*inFlightFences[frameIndex]);
 	commandBuffers[frameIndex].reset();
 	recordCommandBuffer(imageIndex);
 
@@ -298,8 +309,26 @@ void Renderer::drawFrame()
 		.pSwapchains = &*swapChain,
 		.pImageIndices = &imageIndex
 	};
-	result = queue.presentKHR(presentInfoKHR);
-
+	try
+	{
+		result = queue.presentKHR(presentInfoKHR);
+	}
+	catch (const vk::OutOfDateKHRError&)
+	{
+		framebufferResized = false;
+		recreateSwapChain(window);
+		return;
+	}
+	if (result == vk::Result::eSuboptimalKHR || framebufferResized)
+	{
+	    framebufferResized = false;
+	    recreateSwapChain(window);
+	}
+	else
+	{
+	    assert(result == vk::Result::eSuccess);
+	}
+	
 	frameIndex = (frameIndex + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
@@ -307,6 +336,11 @@ void Renderer::cleanupSwapChain()
 {
 	swapChainImageViews.clear();
 	swapChain = nullptr;
+}
+
+void Renderer::waitIdle()
+{
+	device.waitIdle();
 }
 
 std::vector<char const*> Renderer::GetRequiredExtensions()
@@ -448,6 +482,7 @@ std::vector<char> Renderer::readFile(const std::string& filename)
 void Renderer::recordCommandBuffer(uint32_t imageIndex)
 {
 	auto& commandBuffer = commandBuffers[frameIndex];
+	commandBuffer.begin({});
 	transition_image_layout
 	(
 		imageIndex,
@@ -498,10 +533,28 @@ void Renderer::recordCommandBuffer(uint32_t imageIndex)
 
 void Renderer::recreateSwapChain(GLFWwindow* window)
 {
+	int width = 0, height = 0;
+	glfwGetFramebufferSize(window, &width, &height);
+	while ((width == 0 || height == 0) && !glfwWindowShouldClose(window))
+	{
+		glfwGetFramebufferSize(window, &width, &height);
+		glfwWaitEvents();
+	}
+	if (glfwWindowShouldClose(window))
+	{
+		return;
+	}
+
 	device.waitIdle();
 	cleanupSwapChain();
 	createSwapChain(window);
 	createImageViews();
+}
+
+void Renderer::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+{
+	auto app = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
+	app->framebufferResized = true;
 }
 
 void Renderer::	transition_image_layout(uint32_t imageIndex, vk::ImageLayout old_layout, vk::ImageLayout new_layout, vk::AccessFlags2 src_access_mask, vk::AccessFlags2 dst_access_mask, vk::PipelineStageFlags2 src_stage_mask, vk::PipelineStageFlags2 dst_stage_mask)

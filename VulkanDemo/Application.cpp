@@ -10,8 +10,9 @@ void Application::Run()
 {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
-        renderer.drawFrame();
+        renderer.drawFrame(window);
     }
+    renderer.waitIdle();
 }
 
 void Application::Destroy()
@@ -24,9 +25,11 @@ void Application::InitWindow()
 {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     window = glfwCreateWindow(width, height, "VulkanDemo", nullptr, nullptr);
+    glfwSetWindowUserPointer(window, &renderer);
+    glfwSetFramebufferSizeCallback(window, renderer.framebufferResizeCallback);
 }
 
 void Application::InitVulkan()
@@ -45,11 +48,11 @@ void Application::InitVulkan()
 
 void Application::DestroyWindow()
 {
-    renderer.cleanupSwapChain();
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
 void Application::DestroyVulkan()
 {
+    
 }
