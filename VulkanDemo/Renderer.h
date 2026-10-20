@@ -19,7 +19,7 @@ public:
 	void createImageViews();
 	void createGraphicPipeline();
 	void createCommandPool();
-	void createCommandBuffer();
+	void createCommandBuffers();
 	void createSyncObjects();
 	void drawFrame();
 	void cleanupSwapChain();
@@ -42,11 +42,14 @@ private:
 	vk::raii::PipelineLayout pipelineLayout = nullptr;
 	vk::raii::Pipeline graphicPipeline = nullptr;
 	vk::raii::CommandPool commandPool = nullptr;
-	vk::raii::CommandBuffer commandBuffer = nullptr;
-	vk::raii::Semaphore presentCompleteSemaphore = nullptr;
-	vk::raii::Semaphore renderFinishedSemaphore = nullptr;
-	vk::raii::Fence drawFence = nullptr;
-	
+	std::vector<vk::raii::CommandBuffer> commandBuffers;
+	std::vector<vk::raii::Semaphore> presentCompleteSemaphores;
+	std::vector<vk::raii::Semaphore> renderFinishedSemaphores;
+	std::vector<vk::raii::Fence> inFlightFences;
+	uint32_t frameIndex = 0;
+
+	static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+
 	std::vector<const char*> requiredDeviceExtension = { vk::KHRSwapchainExtensionName };
 	std::vector<char const*>GetRequiredExtensions();
 	std::vector<char const*>GetRequiredLayers();

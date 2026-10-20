@@ -39,7 +39,7 @@ void Application::InitVulkan()
     renderer.createImageViews();
     renderer.createGraphicPipeline();
     renderer.createCommandPool();
-    renderer.createCommandBuffer();
+    renderer.createCommandBuffers();
     renderer.createSyncObjects();
 }
 
