@@ -1,0 +1,187 @@
+Refactorisation de Renderer
+============================
+
+Objectif
+--------
+La classe Renderer mélange actuellement plusieurs responsabilités : création de l'instance Vulkan, sélection du GPU, création de la swap chain, création du pipeline graphique, gestion des command buffers et synchronisation des frames.
+
+Il est préférable de regrouper les fonctions par ressource Vulkan et par cycle de vie, plutôt que de créer une classe par fonction.
+
+
+1. VulkanContext ou InstanceManager
+-----------------------------------
+Responsabilités :
+- Créer l'instance Vulkan.
+- Récupérer les extensions requises.
+- Récupérer les layers requis.
+- Configurer le debug messenger.
+- Contenir le callback de validation Vulkan.
+
+Fonctions à déplacer :
+- CreateInstance
+- GetRequiredExtensions
+- GetRequiredLayers
+- setupDebugMessenger
+- DebugCallback
+
+Données à déplacer :
+- vk::raii::Context context
+- vk::raii::Instance instance
+- vk::raii::DebugUtilsMessengerEXT debugMessenger
+
+
+2. Device
+---------
+La classe Device actuellement vide peut regrouper la sélection et la création du device Vulkan.
+
+Fonctions à déplacer :
+- pickPhysicalDevice
+- createLogicalDevice
+- isDeviceSuitable
+
+Données à déplacer :
+- vk::raii::PhysicalDevice physicalDevice
+- vk::raii::Device device
+- vk::raii::Queue queue
+- uint32_t queueFamilyIndex
+- Les extensions et features Vulkan nécessaires
+
+Interface possible :
+- GetDevice()
+- GetPhysicalDevice()
+- GetGraphicsQueue()
+- GetGraphicsQueueFamily()
+
+La sélection des extensions et des features Vulkan doit rester dans cette classe.
+
+
+3. Surface
+----------
+Responsabilité : gérer la surface Vulkan associée à la fenêtre GLFW.
+
+Fonctions à déplacer :
+- createSurface
+
+Donnée à déplacer :
+- vk::raii::SurfaceKHR surface
+
+La surface est utilisée par Device pour vérifier le support du GPU et par SwapChain pour créer la swap chain.
+
+
+4. SwapChain
+------------
+La classe SwapChain actuellement vide peut regrouper tout ce qui concerne la swap chain et ses image views.
+
+Fonctions à déplacer :
+- createSwapChain
+- createImageViews
+- cleanupSwapChain
+- recreateSwapChain
+- chooseSwapSurfaceFormat
+- chooseSwapPresentMode
+- chooseSwapExtent
+- chooseSwapMinImageCount
+
+Données à déplacer :
+- vk::raii::SwapchainKHR swapChain
+- std::vector<vk::Image> swapChainImages
+- std::vector<vk::raii::ImageView> swapChainImageViews
+- vk::SurfaceFormatKHR swapChainSurfaceFormat
+- vk::Extent2D swapChainExtent
+
+Cette classe dépendrait principalement de Device, Surface et GLFWwindow.
+
+
+5. GraphicPipeline
+------------------
+La classe GraphicPipeline actuellement vide peut gérer la création du pipeline graphique et des shaders.
+
+Fonctions à déplacer :
+- createGraphicPipeline
+- createShaderModule
+- readFile
+
+Données à déplacer :
+- vk::raii::PipelineLayout pipelineLayout
+- vk::raii::Pipeline graphicPipeline
+
+Cette classe devrait recevoir le device, le format de la swap chain et l'étendue de la fenêtre. Elle ne devrait pas connaître GLFW, les fences ou les command buffers.
+
+
+6. CommandManager
+-----------------
+Responsabilité : gérer les commandes GPU et l'enregistrement des command buffers.
+
+Fonctions à déplacer :
+- createCommandPool
+- createCommandBuffers
+- recordCommandBuffer
+- transition_image_layout
+
+Données à déplacer :
+- vk::raii::CommandPool commandPool
+- std::vector<vk::raii::CommandBuffer> commandBuffers
+
+Cette classe utiliserait SwapChain et GraphicPipeline pour enregistrer le rendu.
+
+
+7. FrameSynchronizer
+--------------------
+Responsabilité : gérer la synchronisation entre les frames et le GPU.
+
+Fonctions à déplacer :
+- createSyncObjects
+- Attente des fences
+- Gestion des semaphores
+- Gestion de frameIndex
+
+Données à déplacer :
+- std::vector<vk::raii::Semaphore> presentCompleteSemaphores
+- std::vector<vk::raii::Semaphore> renderFinishedSemaphores
+- std::vector<vk::raii::Fence> inFlightFences
+- uint32_t frameIndex
+
+
+Rôle final de Renderer
+----------------------
+Après le refactor, Renderer devrait devenir une classe d'orchestration légère :
+
+- Initialize(GLFWwindow* window)
+- DrawFrame(GLFWwindow* window)
+- Resize(GLFWwindow* window)
+- WaitIdle()
+
+Elle pourrait contenir les objets suivants :
+
+- VulkanContext context
+- Device device
+- Surface surface
+- SwapChain swapChain
+- GraphicPipeline pipeline
+- CommandManager commands
+- FrameSynchronizer synchronization
+
+Application ne devrait plus appeler une dizaine de fonctions Vulkan dans InitVulkan. Elle devrait simplement appeler :
+
+	renderer.Initialize(window);
+
+
+Ordre de refactorisation conseillé
+-----------------------------------
+1. Implémenter Device et y déplacer la sélection et la création du device.
+2. Implémenter SwapChain avec ses images et image views.
+3. Déplacer GraphicPipeline.
+4. Déplacer les command buffers et la synchronisation.
+5. Remplacer les appels Vulkan détaillés dans Application par Renderer::Initialize.
+6. Réduire Renderer::drawFrame à l'orchestration générale.
+
+
+Points importants
+-----------------
+- Ne pas créer une classe par fonction : une classe doit représenter une responsabilité ou une ressource.
+- Préserver l'ordre de destruction des ressources Vulkan.
+- Les objets dépendants, comme le pipeline et les image views, doivent être détruits avant la swap chain.
+- La swap chain doit être détruite avant le device.
+- Le device doit être détruit avant l'instance.
+- Les wrappers vk::raii facilitent la destruction automatique, mais l'ordre des champs et des objets reste important.
+- Harmoniser progressivement le nommage des fonctions, par exemple CreateInstance, PickPhysicalDevice et CreateSwapChain.

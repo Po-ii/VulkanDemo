@@ -153,13 +153,24 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="GraphicPipeline.cpp" />
+    <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="VulkanDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="Device.h" />
+    <ClInclude Include="GraphicPipeline.h" />
+    <ClInclude Include="Instance.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="SwapChain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="REFACTORING_RENDERER.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
