@@ -13,9 +13,3 @@ void FrameSynchronizer::createSyncObjects(Device const& device, SwapChain const&
 		inFlightFences.emplace_back(device.GetDevice(), vk::FenceCreateInfo{.flags = vk::FenceCreateFlagBits::eSignaled});
 	}
 }
-
-void FrameSynchronizer::framebufferResizeCallback(GLFWwindow* window, int width, int height)
-{
-	auto app = reinterpret_cast<FrameSynchronizer*>(glfwGetWindowUserPointer(window));
-	app->framebufferResized = true;
-}

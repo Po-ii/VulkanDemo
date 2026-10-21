@@ -14,7 +14,6 @@ class FrameSynchronizer
 public:
 
 	void createSyncObjects(Device const& device, SwapChain const& swapChain);
-	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 	uint32_t const& GetFrameIndex() const { return frameIndex; }
 	static constexpr int GetMaxFramesInFlight() { return MAX_FRAMES_IN_FLIGHT; }

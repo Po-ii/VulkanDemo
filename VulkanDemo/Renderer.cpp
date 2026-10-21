@@ -4,7 +4,7 @@ void Renderer::Initialize(GLFWwindow* window)
 {
 	instance.createInstance();
 	surface.createSurface(window, instance);
-	device.GetPhysicalDevice();
+	device.pickPhysicalDevice(instance);
 	device.createLogicalDevice(surface);
 	swapChain.createSwapChain(window, device, surface);
 	swapChain.createImageViews(device);
@@ -86,7 +86,13 @@ void Renderer::drawFrame(GLFWwindow* window)
 	synchronization.AdvanceFrame();
 }
 
-void Renderer::waitIdle(Device const& device) 
+void Renderer::waitIdle()
 {
 	return device.GetDevice().waitIdle();
+}
+
+void Renderer::framebufferResizeCallback(GLFWwindow* window, int width, int height)
+{
+	auto renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
+	renderer->synchronization.SetFramebufferResized(true);
 }

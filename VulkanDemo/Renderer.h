@@ -21,7 +21,8 @@ class Renderer
 public:
 	void Initialize(GLFWwindow* window);
 	void drawFrame(GLFWwindow* window);
-	void waitIdle(Device const& device);
+	void waitIdle();
+	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 private:
 	Instance instance;

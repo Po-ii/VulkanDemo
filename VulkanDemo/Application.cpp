@@ -29,7 +29,7 @@ void Application::InitWindow()
 
     window = glfwCreateWindow(width, height, "VulkanDemo", nullptr, nullptr);
     glfwSetWindowUserPointer(window, &renderer);
-    glfwSetFramebufferSizeCallback(window,);
+    glfwSetFramebufferSizeCallback(window, Renderer::framebufferResizeCallback);
 }
 
 void Application::InitVulkan()
