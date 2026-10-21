@@ -12,7 +12,7 @@ void CommandManager::createCommandBuffers(Device const& device, FrameSynchronize
 	commandBuffers = vk::raii::CommandBuffers(device.GetDevice(), allocInfo);
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline)
+void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& verBuffer)
 {
 	auto& commandBuffer = commandBuffers[synchronizer.GetFrameIndex()];
 	commandBuffer.begin({});

@@ -1,6 +1,6 @@
 #include "VertexBuffer.h"
 
-void VertexBuffer::vreateVertexBuffer()
+void VertexBuffer::createVertexBuffer(Device const& device, GraphicPipeline const& pipeline)
 {
 	vk::BufferCreateInfo bufferInfo
 	{
@@ -14,8 +14,9 @@ void VertexBuffer::vreateVertexBuffer()
 	vk::MemoryAllocateInfo memoryAllocateInfo
 	{
 		.allocationSize = memRequirements.size,
-		.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)
+		.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, device)
 	};
+	vertexBufferMemory = vk::raii::DeviceMemory(device.GetDevice(), memoryAllocateInfo);
 	vertexBuffer.bindMemory(*vertexBufferMemory, 0);
 
 	void* data = vertexBufferMemory.mapMemory(0, bufferInfo.size);
@@ -23,7 +24,7 @@ void VertexBuffer::vreateVertexBuffer()
 	vertexBufferMemory.unmapMemory();
 }
 
-uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties)
+uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device)
 {
 	vk::PhysicalDeviceMemoryProperties memProperties = device.GetPhysicalDevice().getMemoryProperties();
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)

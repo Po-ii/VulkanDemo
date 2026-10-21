@@ -14,16 +14,14 @@
 class VertexBuffer
 {
 public:
-	void vreateVertexBuffer();
+	void createVertexBuffer(Device const& device, GraphicPipeline const& pipeline);
 
 	vk::raii::Buffer const& GetVertexBuffer() const { return vertexBuffer; }
 
 private:
-	Device device;
-	GraphicPipeline pipeline;
 	vk::raii::Buffer vertexBuffer = nullptr;
 	vk::raii::DeviceMemory vertexBufferMemory = nullptr;
 
-	uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
+	uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device);
 };
 

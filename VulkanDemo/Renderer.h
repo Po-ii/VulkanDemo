@@ -14,6 +14,7 @@
 #include "GraphicPipeline.h"
 #include "CommandManager.h"
 #include "FrameSynchronizer.h"
+#include "VertexBuffer.h"
 
 
 class Renderer
@@ -32,5 +33,7 @@ private:
 	GraphicPipeline pipeline;
 	CommandManager commands;
 	FrameSynchronizer synchronization;
+	VertexBuffer verBuffer;
+	
 };
 

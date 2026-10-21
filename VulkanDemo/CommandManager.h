@@ -17,14 +17,12 @@ class CommandManager
 public:
 	void createCommandPool(Device const& device);
 	void createCommandBuffers(Device const& device, FrameSynchronizer const& synchronizer);
-	void recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline);
+	void recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& verBuffer);
 	
 	vk::raii::CommandBuffer const& GetCommandBuffer(uint32_t index) const { return commandBuffers.at(index); }
 	vk::raii::CommandBuffer& GetCommandBuffer(uint32_t index) { return commandBuffers.at(index); }
 
 private:
-	VertexBuffer verBuffer;
-
 	vk::raii::CommandPool commandPool = nullptr;
 	std::vector<vk::raii::CommandBuffer> commandBuffers;
 

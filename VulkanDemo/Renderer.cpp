@@ -10,6 +10,7 @@ void Renderer::Initialize(GLFWwindow* window)
 	swapChain.createImageViews(device);
 	pipeline.createGraphicPipeline(device, swapChain);
 	commands.createCommandPool(device);
+	verBuffer.createVertexBuffer(device, pipeline);
 	commands.createCommandBuffers(device, synchronization);
 	synchronization.createSyncObjects(device, swapChain);
 }
@@ -40,7 +41,7 @@ void Renderer::drawFrame(GLFWwindow* window)
 	device.GetDevice().resetFences(*inFlightFence);
 	commands.GetCommandBuffer(frameIndex).reset();
 
-	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline);
+	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline, verBuffer);
 
 	vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
 	const vk::SubmitInfo   submitInfo
