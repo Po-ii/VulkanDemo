@@ -10,6 +10,7 @@
 #include "SwapChain.h"
 #include "GraphicPipeline.h"
 #include "FrameSynchronizer.h"
+#include "VertexBuffer.h"
 
 class CommandManager
 {
@@ -20,7 +21,9 @@ public:
 	
 	vk::raii::CommandBuffer const& GetCommandBuffer(uint32_t index) const { return commandBuffers.at(index); }
 	vk::raii::CommandBuffer& GetCommandBuffer(uint32_t index) { return commandBuffers.at(index); }
+
 private:
+	VertexBuffer verBuffer;
 
 	vk::raii::CommandPool commandPool = nullptr;
 	std::vector<vk::raii::CommandBuffer> commandBuffers;

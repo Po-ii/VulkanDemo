@@ -161,6 +161,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Surface.cpp" />
     <ClCompile Include="SwapChain.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VulkanDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +175,7 @@
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="SwapChain.h" />
+    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="REFACTORING_RENDERER.txt" />
