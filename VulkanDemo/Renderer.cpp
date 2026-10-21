@@ -16,16 +16,19 @@ void Renderer::Initialize(GLFWwindow* window)
 
 void Renderer::drawFrame(GLFWwindow* window)
 {
-	auto fenceResult = device.waitForFences(*inFlightFences[frameIndex], vk::True, UINT64_MAX);
+	const uint32_t frameIndex = synchronization.GetFrameIndex();
+
+	vk::raii::Fence const& inFlightFence = synchronization.GetInFlightFence(frameIndex);
+	auto fenceResult = device.GetDevice().waitForFences(*inFlightFence, vk::True, UINT64_MAX);
 	if (fenceResult != vk::Result::eSuccess)
 	{
 		throw std::runtime_error("failed to wait for fence!");
 	}
 
-	auto [result, imageIndex] = swapChain.acquireNextImage(UINT64_MAX, *presentCompleteSemaphores[frameIndex], nullptr);
+	auto [result, imageIndex] = swapChain.GetSwapChain().acquireNextImage(UINT64_MAX, *synchronization.GetPresentCompleteSemaphore(frameIndex), nullptr);
 	if (result == vk::Result::eErrorOutOfDateKHR)
 	{
-		recreateSwapChain(window);
+		swapChain.recreateSwapChain(window, device, surface);
 		return;
 	}
 	if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
@@ -34,52 +37,53 @@ void Renderer::drawFrame(GLFWwindow* window)
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	device.resetFences(*inFlightFences[frameIndex]);
-	commandBuffers[frameIndex].reset();
-	recordCommandBuffer(imageIndex);
+	device.GetDevice().resetFences(*inFlightFence);
+	commands.GetCommandBuffer(frameIndex).reset();
+
+	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline);
 
 	vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
 	const vk::SubmitInfo   submitInfo
 	{
 		.waitSemaphoreCount = 1,
-		.pWaitSemaphores = &*presentCompleteSemaphores[frameIndex],
+		.pWaitSemaphores = &*synchronization.GetPresentCompleteSemaphore(frameIndex),
 		.pWaitDstStageMask = &waitDestinationStageMask,
 		.commandBufferCount = 1,
-		.pCommandBuffers = &*commandBuffers[frameIndex],
+		.pCommandBuffers = &*commands.GetCommandBuffer(frameIndex),
 		.signalSemaphoreCount = 1,
-		.pSignalSemaphores = &*renderFinishedSemaphores[imageIndex]
+		.pSignalSemaphores = &*synchronization.GetRenderFinishedSemaphore(imageIndex)
 	};
-	queue.submit(submitInfo, *inFlightFences[frameIndex]);
+	device.GetQueue().submit(submitInfo, *inFlightFence);
 
 	const vk::PresentInfoKHR presentInfoKHR
 	{
 		.waitSemaphoreCount = 1,
-		.pWaitSemaphores = &*renderFinishedSemaphores[imageIndex],
+		.pWaitSemaphores = &*synchronization.GetRenderFinishedSemaphore(imageIndex),
 		.swapchainCount = 1,
-		.pSwapchains = &*swapChain,
+		.pSwapchains = &*swapChain.GetSwapChain(),
 		.pImageIndices = &imageIndex
 	};
 	try
 	{
-		result = queue.presentKHR(presentInfoKHR);
+		result = device.GetQueue().presentKHR(presentInfoKHR);
 	}
 	catch (const vk::OutOfDateKHRError&)
 	{
-		framebufferResized = false;
-		recreateSwapChain(window);
+		synchronization.SetFramebufferResized(false);
+		swapChain.recreateSwapChain(window, device, surface);
 		return;
 	}
-	if (result == vk::Result::eSuboptimalKHR || framebufferResized)
+	if (result == vk::Result::eSuboptimalKHR || synchronization.IsFramebufferResized() )
 	{
-		framebufferResized = false;
-		recreateSwapChain(window);
+		synchronization.SetFramebufferResized(false);
+		swapChain.recreateSwapChain(window, device, surface);
 	}
 	else
 	{
 		assert(result == vk::Result::eSuccess);
 	}
 
-	frameIndex = (frameIndex + 1) % MAX_FRAMES_IN_FLIGHT;
+	synchronization.AdvanceFrame();
 }
 
 void Renderer::waitIdle(Device const& device) 

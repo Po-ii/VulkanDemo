@@ -16,8 +16,15 @@ public:
 	void createSyncObjects(Device const& device, SwapChain const& swapChain);
 	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
-	uint32_t GetFrameIdex() const { return frameIndex; }
+	uint32_t const& GetFrameIndex() const { return frameIndex; }
 	static constexpr int GetMaxFramesInFlight() { return MAX_FRAMES_IN_FLIGHT; }
+	vk::raii::Fence const& GetInFlightFence(uint32_t index) const { return inFlightFences.at(index); }
+	vk::raii::Semaphore const& GetPresentCompleteSemaphore(uint32_t index) const { return presentCompleteSemaphores.at(index); }
+	vk::raii::Semaphore const& GetRenderFinishedSemaphore(uint32_t index) const { return renderFinishedSemaphores.at(index); }
+	void SetFramebufferResized(bool value) { framebufferResized = value; }
+
+	bool IsFramebufferResized() const { return framebufferResized; }
+	void AdvanceFrame() { frameIndex = (frameIndex + 1) % MAX_FRAMES_IN_FLIGHT; }
 
 private:
 	std::vector<vk::raii::Semaphore> presentCompleteSemaphores;

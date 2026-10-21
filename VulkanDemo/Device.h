@@ -18,6 +18,7 @@ public:
 
 	vk::raii::Device const& GetDevice() const { return device; }
 	vk::raii::PhysicalDevice const& GetPhysicalDevice() const { return physicalDevice; }
+	vk::raii::Queue const& GetQueue() const { return queue; }
 	uint32_t GetQueueIndex() const { return queueIndex; }
 
 private: 

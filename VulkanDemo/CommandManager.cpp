@@ -14,7 +14,7 @@ void CommandManager::createCommandBuffers(Device const& device, FrameSynchronize
 
 void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline)
 {
-	auto& commandBuffer = commandBuffers[synchronizer.GetFrameIdex()];
+	auto& commandBuffer = commandBuffers[synchronizer.GetFrameIndex()];
 	commandBuffer.begin({});
 	transition_image_layout
 	(
@@ -90,5 +90,5 @@ void CommandManager::transition_image_layout(uint32_t imageIndex, vk::ImageLayou
 		.dependencyFlags = {},
 		.imageMemoryBarrierCount = 1,
 		.pImageMemoryBarriers = &barrier };
-	commandBuffers[synchronizer.GetFrameIdex()].pipelineBarrier2(dependency_info);
+	commandBuffers[synchronizer.GetFrameIndex()].pipelineBarrier2(dependency_info);
 }

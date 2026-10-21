@@ -16,7 +16,9 @@ public:
 	void createSwapChain(GLFWwindow* window, Device const& device, Surface const& surface);
 	void createImageViews(Device const& device);
 	void cleanupSwapChain();
+	void recreateSwapChain(GLFWwindow* window, Device const& device, Surface const& surface);
 
+	vk::raii::SwapchainKHR const& GetSwapChain() const { return swapChain; }
 	vk::Extent2D GetSwapChainExtent() const { return swapChainExtent; }
 	vk::SurfaceFormatKHR GetSwapChainSurfaceFormat() const { return swapChainSurfaceFormat; }
 	std::vector<vk::Image> GetSwapChainImages() const { return swapChainImages; }
@@ -33,6 +35,5 @@ private:
 	vk::PresentModeKHR chooseSwapPresentMode(std::vector<vk::PresentModeKHR> const& availablePresentModes);
 	vk::Extent2D chooseSwapExtent(vk::SurfaceCapabilitiesKHR const& capabilities, GLFWwindow* window);
 	uint32_t chooseSwapMinImageCount(vk::SurfaceCapabilitiesKHR const& surfaceCapabilities);
-	void recreateSwapChain(GLFWwindow* window, Device const& device, Surface const& surface);
 };
 
