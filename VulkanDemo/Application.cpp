@@ -29,21 +29,12 @@ void Application::InitWindow()
 
     window = glfwCreateWindow(width, height, "VulkanDemo", nullptr, nullptr);
     glfwSetWindowUserPointer(window, &renderer);
-    glfwSetFramebufferSizeCallback(window, renderer.framebufferResizeCallback);
+    glfwSetFramebufferSizeCallback(window,);
 }
 
 void Application::InitVulkan()
 {
-    renderer.CreateInstance();
-    renderer.createSurface(window);
-    renderer.pickPhysicalDevice();
-	renderer.createLogicalDevice();
-    renderer.createSwapChain(window);
-    renderer.createImageViews();
-    renderer.createGraphicPipeline();
-    renderer.createCommandPool();
-    renderer.createCommandBuffers();
-    renderer.createSyncObjects();
+    renderer.Initialize(window);
 }
 
 void Application::DestroyWindow()
