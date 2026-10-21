@@ -20,7 +20,7 @@ public:
 	vk::Extent2D GetSwapChainExtent() const { return swapChainExtent; }
 	vk::SurfaceFormatKHR GetSwapChainSurfaceFormat() const { return swapChainSurfaceFormat; }
 	std::vector<vk::Image> GetSwapChainImages() const { return swapChainImages; }
-	std::vector<vk::raii::ImageView> GetSwapChainImageViews() const { return swapChainImageViews; }
+	std::vector<vk::raii::ImageView> const& GetSwapChainImageViews() const { return swapChainImageViews; }
 	
 private:
 	vk::raii::SwapchainKHR swapChain = nullptr;
