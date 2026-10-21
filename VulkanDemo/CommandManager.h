@@ -21,6 +21,7 @@ public:
 	
 	vk::raii::CommandBuffer const& GetCommandBuffer(uint32_t index) const { return commandBuffers.at(index); }
 	vk::raii::CommandBuffer& GetCommandBuffer(uint32_t index) { return commandBuffers.at(index); }
+	vk::raii::CommandPool const& GetCommandPool() const { return commandPool; }
 
 private:
 	vk::raii::CommandPool commandPool = nullptr;
