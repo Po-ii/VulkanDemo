@@ -152,8 +152,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="CommandManager.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="FrameSynchronizer.cpp" />
     <ClCompile Include="GraphicPipeline.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -163,8 +165,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="CommandManager.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="FrameSynchronizer.h" />
     <ClInclude Include="GraphicPipeline.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="Renderer.h" />

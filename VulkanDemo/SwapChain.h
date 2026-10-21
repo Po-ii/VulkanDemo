@@ -17,6 +17,11 @@ public:
 	void createImageViews(Device const& device);
 	void cleanupSwapChain();
 
+	vk::Extent2D GetSwapChainExtent() const { return swapChainExtent; }
+	vk::SurfaceFormatKHR GetSwapChainSurfaceFormat() const { return swapChainSurfaceFormat; }
+	std::vector<vk::Image> GetSwapChainImages() const { return swapChainImages; }
+	std::vector<vk::raii::ImageView> GetSwapChainImageViews() const { return swapChainImageViews; }
+	
 private:
 	vk::raii::SwapchainKHR swapChain = nullptr;
 	std::vector<vk::Image> swapChainImages;

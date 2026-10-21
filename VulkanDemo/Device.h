@@ -15,8 +15,10 @@ public:
 
 	void pickPhysicalDevice(Instance const& instance);
 	void createLogicalDevice(Surface const& surface);
+
 	vk::raii::Device const& GetDevice() const { return device; }
 	vk::raii::PhysicalDevice const& GetPhysicalDevice() const { return physicalDevice; }
+	uint32_t GetQueueIndex() const { return queueIndex; }
 
 private: 
 	vk::raii::Device device = nullptr;
