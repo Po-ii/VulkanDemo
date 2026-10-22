@@ -1,4 +1,6 @@
 #include "FrameSynchronizer.h"
+#include "Device.h"
+#include "SwapChain.h"
 
 void FrameSynchronizer::createSyncObjects(Device const& device, SwapChain const& swapChain)
 {

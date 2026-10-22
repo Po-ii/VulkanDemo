@@ -1,4 +1,6 @@
 #include "SwapChain.h"
+#include "Device.h"
+#include "Surface.h"
 
 void SwapChain::createSwapChain(GLFWwindow* window, Device const& device, Surface const& surface)
 {

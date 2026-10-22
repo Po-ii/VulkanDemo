@@ -1,4 +1,7 @@
 #include "VertexBuffer.h"
+#include "Device.h"
+#include "GraphicPipeline.h"
+#include "CommandManager.h"
 
 std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> VertexBuffer::createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device ,GraphicPipeline const& pipeline)
 {

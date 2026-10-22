@@ -87,7 +87,4 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="REFACTORING_RENDERER.txt" />
-  </ItemGroup>
 </Project>

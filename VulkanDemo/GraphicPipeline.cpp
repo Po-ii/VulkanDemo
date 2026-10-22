@@ -1,5 +1,7 @@
 #include <fstream>
 #include "GraphicPipeline.h"
+#include "Device.h"
+#include "SwapChain.h"
 
 void GraphicPipeline::createGraphicPipeline(Device const& device, SwapChain const& swapChain)
 {

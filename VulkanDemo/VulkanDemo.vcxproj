@@ -177,9 +177,6 @@
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="REFACTORING_RENDERER.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

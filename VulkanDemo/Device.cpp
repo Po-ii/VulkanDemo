@@ -1,4 +1,6 @@
 #include "Device.h"
+#include "Instance.h"
+#include "Surface.h"
 
 void Device::pickPhysicalDevice(Instance const& instance)
 {

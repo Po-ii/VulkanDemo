@@ -1,4 +1,9 @@
 #include "CommandManager.h"
+#include "Device.h"
+#include "SwapChain.h"
+#include "GraphicPipeline.h"
+#include "FrameSynchronizer.h"
+#include "VertexBuffer.h"
 
 void CommandManager::createCommandPool(Device const& device)
 {
@@ -12,7 +17,7 @@ void CommandManager::createCommandBuffers(Device const& device, FrameSynchronize
 	commandBuffers = vk::raii::CommandBuffers(device.GetDevice(), allocInfo);
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& verBuffer)
+void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer)
 {
 	auto& commandBuffer = commandBuffers[synchronizer.GetFrameIndex()];
 	commandBuffer.begin({});
@@ -49,7 +54,7 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& s
 	commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline.GetGraphicPipeline());
 	commandBuffer.setViewport(0, vk::Viewport(0.0f, 0.0f, static_cast<float>(swapChain.GetSwapChainExtent().width), static_cast<float>(swapChain.GetSwapChainExtent().height), 0.0f, 1.0f));
 	commandBuffer.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), swapChain.GetSwapChainExtent()));
-	commandBuffer.bindVertexBuffers(0, *verBuffer.GetVertexBuffer(), {0});
+	commandBuffer.bindVertexBuffers(0, *vertexBuffer.GetVertexBuffer(), {0});
 	commandBuffer.draw(static_cast<uint32_t>(pipeline.GetVertices().size()), 1, 0, 0);
 	commandBuffer.endRendering();
 
