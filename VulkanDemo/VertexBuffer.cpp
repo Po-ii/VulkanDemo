@@ -7,8 +7,8 @@ std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> VertexBuffer::createBuffer(v
 {
 	vk::BufferCreateInfo bufferInfo
 	{
-		.size = sizeof(pipeline.GetVertices()[0]) * pipeline.GetVertices().size(),
-		.usage = vk::BufferUsageFlagBits::eVertexBuffer,
+		.size = size,
+		.usage = usage,
 		.sharingMode = vk::SharingMode::eExclusive
 	};
 	vk::raii::Buffer buffer = vk::raii::Buffer(device.GetDevice(), bufferInfo);
