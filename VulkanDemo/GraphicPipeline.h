@@ -34,9 +34,14 @@ private:
 	};
 
 	const std::vector<Vertex> vertices = {
-	{{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-	{{0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}},
-	{{-0.5f, 0.5f}, {1.0f, 0.0f, 2.0f}}
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+	};
+
+	const std::vector<uint16_t> indices = {
+	0, 1, 2, 2, 3, 0
 	};
 
 public:
@@ -44,5 +49,6 @@ public:
 
 	vk::raii::Pipeline const& GetGraphicPipeline() const { return graphicPipeline; }
 	const std::vector<Vertex>GetVertices() const { return vertices; }
+	const std::vector<uint16_t>GetIndices() const { return indices; }
 };
 

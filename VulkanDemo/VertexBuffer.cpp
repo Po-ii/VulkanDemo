@@ -37,6 +37,23 @@ void VertexBuffer::createVertexBuffer(Device const& device, GraphicPipeline cons
 	copyBuffer(stagingBuffer, vertexBuffer, bufferSize, device, commands);
 }
 
+void VertexBuffer::createIndexBuffer(Device const& device, GraphicPipeline const& pipeline, CommandManager const& commands)
+{
+	vk::DeviceSize bufferSize = sizeof(pipeline.GetIndices()[0]) * pipeline.GetIndices().size();
+
+	auto [stagingBuffer, stagingBufferMemory] =
+		createBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, device, pipeline);
+
+	void* data = stagingBufferMemory.mapMemory(0, bufferSize);
+	memcpy(data, pipeline.GetIndices().data(), (size_t)bufferSize);
+	stagingBufferMemory.unmapMemory();
+
+	std::tie(indexBuffer, indexBufferMemory) =
+		createBuffer(bufferSize, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, vk::MemoryPropertyFlagBits::eDeviceLocal, device, pipeline);
+
+	copyBuffer(stagingBuffer, indexBuffer, bufferSize, device, commands);
+}
+
 uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device)
 {
 	vk::PhysicalDeviceMemoryProperties memProperties = device.GetPhysicalDevice().getMemoryProperties();

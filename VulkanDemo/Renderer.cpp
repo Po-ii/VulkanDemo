@@ -11,6 +11,7 @@ void Renderer::Initialize(GLFWwindow* window)
 	pipeline.createGraphicPipeline(device, swapChain);
 	commands.createCommandPool(device);
 	verBuffer.createVertexBuffer(device, pipeline, commands);
+	verBuffer.createIndexBuffer(device, pipeline, commands);
 	commands.createCommandBuffers(device, synchronization);
 	synchronization.createSyncObjects(device, swapChain);
 }
