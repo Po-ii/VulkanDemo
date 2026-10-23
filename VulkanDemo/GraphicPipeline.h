@@ -23,7 +23,7 @@ private:
 
 		static vk::VertexInputBindingDescription getBindingDescription()
 		{
-			return { .binding = 0, .stride = sizeof(Vertex), . inputRate = vk::VertexInputRate::eVertex };
+			return { .binding = 0, .stride = sizeof(Vertex), .inputRate = vk::VertexInputRate::eVertex };
 		}
 
 		static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescriptions()
