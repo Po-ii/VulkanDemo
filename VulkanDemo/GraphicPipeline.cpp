@@ -51,7 +51,7 @@ void GraphicPipeline::createGraphicPipeline(Device const& device, SwapChain cons
 	vk::PipelineColorBlendStateCreateInfo colorBlending{
 		.logicOpEnable = vk::False, .logicOp = vk::LogicOp::eCopy, .attachmentCount = 1, .pAttachments = &colorBlendAttachment };
 
-	vk::PipelineLayoutCreateInfo pipelineLayoutInfo{ .setLayoutCount = 0, .pushConstantRangeCount = 0 };
+	vk::PipelineLayoutCreateInfo pipelineLayoutInfo{ .setLayoutCount = 1, .pSetLayouts = &*descriptorSetLayout, .pushConstantRangeCount = 0 };
 	pipelineLayout = vk::raii::PipelineLayout(device.GetDevice(), pipelineLayoutInfo);
 
 	vk::PipelineRenderingCreateInfo pipelineRenderingCreateInfo{ .colorAttachmentCount = 1, .pColorAttachmentFormats = &swapChainSurfaceFormat.format };
@@ -71,6 +71,14 @@ void GraphicPipeline::createGraphicPipeline(Device const& device, SwapChain cons
 		{.colorAttachmentCount = 1, .pColorAttachmentFormats = &swapChainSurfaceFormat.format}
 	};
 	graphicPipeline = vk::raii::Pipeline(device.GetDevice(), nullptr, pipelineCreateInfoChain.get<vk::GraphicsPipelineCreateInfo>());
+}
+
+void GraphicPipeline::createDescriptorSetLayout(Device const& device)
+{
+	vk::DescriptorSetLayoutBinding uboLayoutBinding{
+			.binding = 0, .descriptorType = vk::DescriptorType::eUniformBuffer, .descriptorCount = 1, .stageFlags = vk::ShaderStageFlagBits::eVertex };
+	vk::DescriptorSetLayoutCreateInfo layoutInfo{ .bindingCount = 1, .pBindings = &uboLayoutBinding };
+	descriptorSetLayout = vk::raii::DescriptorSetLayout(device.GetDevice(), layoutInfo);
 }
 
 vk::raii::ShaderModule GraphicPipeline::createShaderModule(const std::vector<char>& code, Device const& device) const

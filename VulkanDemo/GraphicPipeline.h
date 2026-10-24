@@ -11,6 +11,7 @@ class GraphicPipeline
 {
 private:
 	vk::raii::PipelineLayout pipelineLayout = nullptr;
+	vk::raii::DescriptorSetLayout descriptorSetLayout = nullptr;
 	vk::raii::Pipeline graphicPipeline = nullptr;
 
 	[[nodiscard]] vk::raii::ShaderModule createShaderModule(const std::vector<char>& code, Device const& device) const;
@@ -46,6 +47,7 @@ private:
 
 public:
 	void createGraphicPipeline(Device const& device, SwapChain const& swapChain);
+	void createDescriptorSetLayout(Device const& device);
 
 	vk::raii::Pipeline const& GetGraphicPipeline() const { return graphicPipeline; }
 	const std::vector<Vertex>GetVertices() const { return vertices; }
