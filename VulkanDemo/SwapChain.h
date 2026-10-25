@@ -7,6 +7,7 @@
 class Device;
 class Surface;
 class Texture;
+class DepthBuffer;
 
 class SwapChain
 {
@@ -18,7 +19,7 @@ public:
 
 	vk::raii::SwapchainKHR const& GetSwapChain() const { return swapChain; }
 	vk::Extent2D GetSwapChainExtent() const { return swapChainExtent; }
-	vk::SurfaceFormatKHR GetSwapChainSurfaceFormat() const { return swapChainSurfaceFormat; }
+	vk::SurfaceFormatKHR const& GetSwapChainSurfaceFormat() const { return swapChainSurfaceFormat; }
 	std::vector<vk::Image> GetSwapChainImages() const { return swapChainImages; }
 	std::vector<vk::raii::ImageView> const& GetSwapChainImageViews() const { return swapChainImageViews; }
 	

@@ -2,6 +2,7 @@
 #include "Device.h"
 #include "Surface.h"
 #include "Texture.h"
+#include "DepthBuffer.h"
 
 void SwapChain::createSwapChain(GLFWwindow* window, Device const& device, Surface const& surface)
 {

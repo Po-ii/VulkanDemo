@@ -9,7 +9,7 @@ void Renderer::Initialize(GLFWwindow* window)
 	swapChain.createSwapChain(window, device, surface);
 	swapChain.createImageViews(device, texture);
 	pipeline.createDescriptorSetLayout(device);
-	pipeline.createGraphicPipeline(device, swapChain);
+	pipeline.createGraphicPipeline(device, swapChain, depth);
 	commands.createCommandPool(device);
 	depth.createDepthResources(device, swapChain, verBuffer, texture);
 	texture.createTextureImage(device, pipeline, verBuffer, commands);

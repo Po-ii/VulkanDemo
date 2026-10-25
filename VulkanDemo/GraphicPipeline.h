@@ -6,6 +6,7 @@
 
 class Device;
 class SwapChain;
+class DepthBuffer;
 
 class GraphicPipeline
 {
@@ -55,7 +56,7 @@ private:
 	};
 
 public:
-	void createGraphicPipeline(Device const& device, SwapChain const& swapChain);
+	void createGraphicPipeline(Device const& device, SwapChain const& swapChain, DepthBuffer const& depthBuffer);
 	void createDescriptorSetLayout(Device const& device);
 
 	vk::raii::Pipeline const& GetGraphicPipeline() const { return graphicPipeline; }

@@ -134,7 +134,7 @@ void CommandManager::transition_image_layout(
 			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 			.image = image,
 			.subresourceRange = {
-				   .aspectMask = vk::ImageAspectFlagBits::eColor,
+				   .aspectMask = image_aspect_flags,
 				   .baseMipLevel = 0,
 				   .levelCount = 1,
 				   .baseArrayLayer = 0,
