@@ -15,7 +15,8 @@
 #include "CommandManager.h"
 #include "FrameSynchronizer.h"
 #include "VertexBuffer.h"
-
+#include "UniformBuffer.h"
+#include "DescriptorManager.h"
 
 class Renderer
 {
@@ -34,6 +35,7 @@ private:
 	CommandManager commands;
 	FrameSynchronizer synchronization;
 	VertexBuffer verBuffer;
-	
+	UniformBuffer uniformBuffer;
+	DescriptorManager descriptors;
 };
 

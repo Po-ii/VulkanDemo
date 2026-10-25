@@ -9,7 +9,7 @@ class CommandManager;
 class VertexBuffer
 {
 public:
-	std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device, GraphicPipeline const& pipeline);
+	std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device, GraphicPipeline const& pipeline) const;
 	void createVertexBuffer(Device const& device, GraphicPipeline const& pipeline, CommandManager const& commands);
 	void createIndexBuffer(Device const& device, GraphicPipeline const& pipeline, CommandManager const& commands);
 
@@ -22,7 +22,7 @@ private:
 	vk::raii::Buffer indexBuffer = nullptr;
 	vk::raii::DeviceMemory indexBufferMemory = nullptr;
 
-	uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device);
+	uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device) const;
 	void copyBuffer(vk::raii::Buffer& srcBuffer, vk::raii::Buffer& dstBuffer, vk::DeviceSize size, Device const& device, CommandManager const& commands);
 };
 

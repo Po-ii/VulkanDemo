@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <chrono>
 
-void UniformBuffer::createUniformBuffer(Device const& device, GraphicPipeline const& pipeline,FrameSynchronizer const& sync, VertexBuffer vertBuffer)
+void UniformBuffer::createUniformBuffer(Device const& device, GraphicPipeline const& pipeline,FrameSynchronizer const& sync, VertexBuffer const& vertBuffer)
 {
     for (size_t i = 0; i < sync.GetMaxFramesInFlight(); i++)
     {

@@ -4,6 +4,7 @@
 #include "GraphicPipeline.h"
 #include "FrameSynchronizer.h"
 #include "VertexBuffer.h"
+#include "DescriptorManager.h"
 
 void CommandManager::createCommandPool(Device const& device)
 {
@@ -17,7 +18,7 @@ void CommandManager::createCommandBuffers(Device const& device, FrameSynchronize
 	commandBuffers = vk::raii::CommandBuffers(device.GetDevice(), allocInfo);
 }
 
-void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer)
+void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer, DescriptorManager const& descriptors)
 {
 	auto& commandBuffer = commandBuffers[synchronizer.GetFrameIndex()];
 	commandBuffer.begin({});
@@ -56,6 +57,7 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& s
 	commandBuffer.setScissor(0, vk::Rect2D(vk::Offset2D(0, 0), swapChain.GetSwapChainExtent()));
 	commandBuffer.bindVertexBuffers(0, *vertexBuffer.GetVertexBuffer(), {0});
 	commandBuffer.bindIndexBuffer(*vertexBuffer.GetIndexBuffer(), 0, vk::IndexType::eUint16);
+	commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipeline.GetPipelineLayout(), 0, *descriptors.GetDescriptorSet(synchronizer.GetFrameIndex()), nullptr);
 	commandBuffer.drawIndexed(static_cast<uint32_t>(pipeline.GetIndices().size()), 1, 0, 0, 0);
 	commandBuffer.endRendering();
 

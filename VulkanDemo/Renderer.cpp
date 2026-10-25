@@ -8,10 +8,14 @@ void Renderer::Initialize(GLFWwindow* window)
 	device.createLogicalDevice(surface);
 	swapChain.createSwapChain(window, device, surface);
 	swapChain.createImageViews(device);
+	pipeline.createDescriptorSetLayout(device);
 	pipeline.createGraphicPipeline(device, swapChain);
 	commands.createCommandPool(device);
 	verBuffer.createVertexBuffer(device, pipeline, commands);
 	verBuffer.createIndexBuffer(device, pipeline, commands);
+	uniformBuffer.createUniformBuffer(device, pipeline, synchronization, verBuffer);
+	descriptors.createDescriptorPool(device, synchronization);
+	descriptors.createDescriptorSets(device, pipeline, uniformBuffer, synchronization);
 	commands.createCommandBuffers(device, synchronization);
 	synchronization.createSyncObjects(device, swapChain);
 }
@@ -42,7 +46,7 @@ void Renderer::drawFrame(GLFWwindow* window)
 	device.GetDevice().resetFences(*inFlightFence);
 	commands.GetCommandBuffer(frameIndex).reset();
 
-	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline, verBuffer);
+	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline, verBuffer, descriptors);
 
 	vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
 	const vk::SubmitInfo   submitInfo

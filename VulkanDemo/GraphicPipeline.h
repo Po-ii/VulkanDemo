@@ -52,5 +52,7 @@ public:
 	vk::raii::Pipeline const& GetGraphicPipeline() const { return graphicPipeline; }
 	const std::vector<Vertex>GetVertices() const { return vertices; }
 	const std::vector<uint16_t>GetIndices() const { return indices; }
+	vk::raii::DescriptorSetLayout const& GetDescriptorSetLayout() const { return descriptorSetLayout; }
+	vk::raii::PipelineLayout const& GetPipelineLayout() const { return pipelineLayout; }
 };
 

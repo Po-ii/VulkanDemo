@@ -3,7 +3,7 @@
 #include "GraphicPipeline.h"
 #include "CommandManager.h"
 
-std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> VertexBuffer::createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device ,GraphicPipeline const& pipeline)
+std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> VertexBuffer::createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device ,GraphicPipeline const& pipeline) const
 {
 	vk::BufferCreateInfo bufferInfo
 	{
@@ -54,7 +54,7 @@ void VertexBuffer::createIndexBuffer(Device const& device, GraphicPipeline const
 	copyBuffer(stagingBuffer, indexBuffer, bufferSize, device, commands);
 }
 
-uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device)
+uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, Device const& device) const
 {
 	vk::PhysicalDeviceMemoryProperties memProperties = device.GetPhysicalDevice().getMemoryProperties();
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)

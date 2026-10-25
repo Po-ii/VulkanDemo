@@ -10,13 +10,14 @@ class SwapChain;
 class GraphicPipeline;
 class FrameSynchronizer;
 class VertexBuffer;
+class DescriptorManager;
 
 class CommandManager
 {
 public:
 	void createCommandPool(Device const& device);
 	void createCommandBuffers(Device const& device, FrameSynchronizer const& synchronizer);
-	void recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer);
+	void recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer, DescriptorManager const& descriptors);
 	
 	vk::raii::CommandBuffer const& GetCommandBuffer(uint32_t index) const { return commandBuffers.at(index); }
 	vk::raii::CommandBuffer& GetCommandBuffer(uint32_t index) { return commandBuffers.at(index); }
