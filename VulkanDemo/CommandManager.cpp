@@ -77,6 +77,26 @@ void CommandManager::recordCommandBuffer(uint32_t imageIndex, SwapChain const& s
 	commandBuffer.end();
 }
 
+vk::raii::CommandBuffer CommandManager::beginSingleTimeCommands(Device const& device) const
+{
+	vk::CommandBufferAllocateInfo allocInfo{ .commandPool = commandPool, .level = vk::CommandBufferLevel::ePrimary, .commandBufferCount = 1 };
+	vk::raii::CommandBuffer       commandBuffer = std::move(vk::raii::CommandBuffers(device.GetDevice(), allocInfo).front());
+
+	vk::CommandBufferBeginInfo beginInfo{ .flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit };
+	commandBuffer.begin(beginInfo);
+
+	return std::move(commandBuffer);
+}
+
+void CommandManager::endSingleTimeCommands(vk::raii::CommandBuffer&& commandBuffer, Device const& device) const
+{
+	commandBuffer.end();
+
+	vk::SubmitInfo submitInfo{ .commandBufferCount = 1, .pCommandBuffers = &*commandBuffer };
+	device.GetQueue().submit(submitInfo, nullptr);
+	device.GetQueue().waitIdle();
+}
+
 void CommandManager::transition_image_layout(uint32_t imageIndex, vk::ImageLayout old_layout, vk::ImageLayout new_layout, vk::AccessFlags2 src_access_mask, vk::AccessFlags2 dst_access_mask, vk::PipelineStageFlags2 src_stage_mask, vk::PipelineStageFlags2 dst_stage_mask, SwapChain const& swapChain, FrameSynchronizer const& synchronizer)
 {
 	vk::ImageMemoryBarrier2 barrier = {

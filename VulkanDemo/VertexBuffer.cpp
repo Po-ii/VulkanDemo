@@ -69,12 +69,7 @@ uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFla
 
 void VertexBuffer::copyBuffer(vk::raii::Buffer& srcBuffer, vk::raii::Buffer& dstBuffer, vk::DeviceSize size, Device const& device, CommandManager const& commands)
 {
-	vk::CommandBufferAllocateInfo allocInfo { .commandPool = commands.GetCommandPool(), .level = vk::CommandBufferLevel::ePrimary, .commandBufferCount = 1};
-	vk::raii::CommandBuffer commandCopyBuffer = std::move(device.GetDevice().allocateCommandBuffers(allocInfo).front());
-
-	commandCopyBuffer.begin({ .flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit });
-	commandCopyBuffer.copyBuffer(*srcBuffer, *dstBuffer, vk::BufferCopy(0, 0, size));
-	commandCopyBuffer.end();
-	device.GetQueue().submit(vk::SubmitInfo{.commandBufferCount = 1, .pCommandBuffers = &*commandCopyBuffer}, nullptr);
-	device.GetQueue().waitIdle();
+	vk::raii::CommandBuffer commandCopyBuffer = commands.beginSingleTimeCommands(device);
+	commandCopyBuffer.copyBuffer(*srcBuffer, *dstBuffer, vk::BufferCopy{ .size = size });
+	commands.endSingleTimeCommands(std::move(commandCopyBuffer), device);
 }
