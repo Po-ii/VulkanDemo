@@ -45,7 +45,7 @@ void Renderer::drawFrame(GLFWwindow* window)
 
 	device.GetDevice().resetFences(*inFlightFence);
 	commands.GetCommandBuffer(frameIndex).reset();
-
+	uniformBuffer.updateUniformBuffer(frameIndex, swapChain);
 	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline, verBuffer, descriptors);
 
 	vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
