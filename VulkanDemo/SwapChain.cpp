@@ -42,7 +42,7 @@ void SwapChain::createImageViews(Device const& device, Texture const& texture)
 	swapChainImageViews.reserve(swapChainImages.size());
 	for (auto& image : swapChainImages)
 	{
-		swapChainImageViews.emplace_back(texture.createImageView(image, swapChainSurfaceFormat.format, device));
+		swapChainImageViews.emplace_back(texture.createImageView(image, swapChainSurfaceFormat.format, vk::ImageAspectFlagBits::eColor, device));
 	}
 }
 

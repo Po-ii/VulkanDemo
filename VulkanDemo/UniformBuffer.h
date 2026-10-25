@@ -1,8 +1,9 @@
 #pragma once
 #define VULKAN_HPP_NO_STRUCT_CONSTRUCTORS
 #include "vulkan/vulkan_raii.hpp"
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <cstdint>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Device;
 class SwapChain;

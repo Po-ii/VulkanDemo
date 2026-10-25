@@ -45,6 +45,13 @@ void GraphicPipeline::createGraphicPipeline(Device const& device, SwapChain cons
 
 	vk::PipelineMultisampleStateCreateInfo multisampling{ .rasterizationSamples = vk::SampleCountFlagBits::e1, .sampleShadingEnable = vk::False };
 
+	vk::PipelineDepthStencilStateCreateInfo depthStencil{
+			.depthTestEnable = vk::True,
+			.depthWriteEnable = vk::True,
+			.depthCompareOp = vk::CompareOp::eLess,
+			.depthBoundsTestEnable = vk::False,
+			.stencilTestEnable = vk::False };
+
 	vk::PipelineColorBlendAttachmentState colorBlendAttachment{
 			.blendEnable = vk::False,
 			.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA };
@@ -57,17 +64,20 @@ void GraphicPipeline::createGraphicPipeline(Device const& device, SwapChain cons
 	vk::PipelineRenderingCreateInfo pipelineRenderingCreateInfo{ .colorAttachmentCount = 1, .pColorAttachmentFormats = &swapChainSurfaceFormat.format };
 	vk::StructureChain<vk::GraphicsPipelineCreateInfo, vk::PipelineRenderingCreateInfo> pipelineCreateInfoChain =
 	{
-		{.stageCount = 2,
-		 .pStages = shaderStages,
-		 .pVertexInputState = &vertexInputInfo,
-		 .pInputAssemblyState = &inputAssembly,
-		 .pViewportState = &viewportState,
-		 .pRasterizationState = &rasterizer,
-		 .pMultisampleState = &multisampling,
-		 .pColorBlendState = &colorBlending,
-		 .pDynamicState = &dynamicState,
-		 .layout = pipelineLayout,
-		 .renderPass = nullptr},
+		{
+			.stageCount = 2,
+			.pStages = shaderStages,
+			.pVertexInputState = &vertexInputInfo,
+			.pInputAssemblyState = &inputAssembly,
+			.pViewportState = &viewportState,
+			.pRasterizationState = &rasterizer,
+			.pMultisampleState = &multisampling,
+			.pDepthStencilState = &depthStencil,
+			.pColorBlendState = &colorBlending,
+			.pDynamicState = &dynamicState,
+			.layout = pipelineLayout,
+			.renderPass = nullptr
+		},
 		{.colorAttachmentCount = 1, .pColorAttachmentFormats = &swapChainSurfaceFormat.format}
 	};
 	graphicPipeline = vk::raii::Pipeline(device.GetDevice(), nullptr, pipelineCreateInfoChain.get<vk::GraphicsPipelineCreateInfo>());

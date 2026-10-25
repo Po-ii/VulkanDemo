@@ -40,11 +40,11 @@ void Texture::createTextureImage(Device const& device, GraphicPipeline const& pi
 
 void Texture::createTextureImageViews(Device const& device)
 {
-    textureImageView = createImageView(*textureImage, vk::Format::eR8G8B8A8Srgb, device);
+    textureImageView = createImageView(*textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, device);
 }
 
 std::pair<vk::raii::Image, vk::raii::DeviceMemory> Texture::createImage(
-    uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device, VertexBuffer const& vertBuffer)
+    uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device, VertexBuffer const& vertBuffer) const
 {
     vk::ImageCreateInfo imageInfo
     { 
@@ -122,14 +122,14 @@ void Texture::copyBufferToImage(vk::raii::CommandBuffer& commandBuffer, const vk
     commandBuffer.copyBufferToImage(buffer, image, vk::ImageLayout::eTransferDstOptimal, region);
 }
 
-vk::raii::ImageView Texture::createImageView(vk::Image const& image, vk::Format format, Device const& device) const
+vk::raii::ImageView Texture::createImageView(vk::Image const& image, vk::Format format, vk::ImageAspectFlags aspectFlags, Device const& device) const
 {
     vk::ImageViewCreateInfo viewInfo
     {
       .image = image,
       .viewType = vk::ImageViewType::e2D,
       .format = format,
-      .subresourceRange = {.aspectMask = vk::ImageAspectFlagBits::eColor, .baseMipLevel = 0, .levelCount = 1, .baseArrayLayer = 0, .layerCount = 1} 
+      .subresourceRange = {.aspectMask = aspectFlags, .baseMipLevel = 0, .levelCount = 1, .baseArrayLayer = 0, .layerCount = 1}
     };
     return vk::raii::ImageView(device.GetDevice(), viewInfo);
 }

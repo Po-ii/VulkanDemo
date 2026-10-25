@@ -18,6 +18,7 @@
 #include "UniformBuffer.h"
 #include "DescriptorManager.h"
 #include "Texture.h"
+#include "DepthBuffer.h"
 
 class Renderer
 {
@@ -39,5 +40,5 @@ private:
 	UniformBuffer uniformBuffer;
 	DescriptorManager descriptors;
 	Texture texture;
+	DepthBuffer depth;
 };
-

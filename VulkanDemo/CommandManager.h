@@ -11,13 +11,15 @@ class GraphicPipeline;
 class FrameSynchronizer;
 class VertexBuffer;
 class DescriptorManager;
+class DepthBuffer;
 
 class CommandManager
 {
 public:
 	void createCommandPool(Device const& device);
 	void createCommandBuffers(Device const& device, FrameSynchronizer const& synchronizer);
-	void recordCommandBuffer(uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer, DescriptorManager const& descriptors);
+	void recordCommandBuffer(
+		uint32_t imageIndex, SwapChain const& swapChain, FrameSynchronizer const& synchronizer, GraphicPipeline const& pipeline, VertexBuffer const& vertexBuffer, DescriptorManager const& descriptors, DepthBuffer const& depthBuffer);
 	vk::raii::CommandBuffer beginSingleTimeCommands(Device const& device) const;
 	void endSingleTimeCommands(vk::raii::CommandBuffer&& commandBuffer, Device const& device) const;
 
@@ -30,14 +32,10 @@ private:
 	std::vector<vk::raii::CommandBuffer> commandBuffers;
 
 	void transition_image_layout(
-		uint32_t imageIndex,
-		vk::ImageLayout  old_layout,
-		vk::ImageLayout  new_layout,
-		vk::AccessFlags2 src_access_mask,
-		vk::AccessFlags2 dst_access_mask,
-		vk::PipelineStageFlags2 src_stage_mask,
-		vk::PipelineStageFlags2 dst_stage_mask,
-		SwapChain const& swapChain,
-		FrameSynchronizer const& synchronizer);
+		vk::Image image, vk::ImageLayout old_layout, 
+		vk::ImageLayout new_layout, vk::AccessFlags2 src_access_mask,
+		vk::AccessFlags2 dst_access_mask, vk::PipelineStageFlags2 src_stage_mask, 
+		vk::PipelineStageFlags2 dst_stage_mask, vk::ImageAspectFlags image_aspect_flags, 
+		SwapChain const& swapChain, FrameSynchronizer const& synchronizer);
 };
 

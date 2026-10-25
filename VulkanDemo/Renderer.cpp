@@ -11,6 +11,7 @@ void Renderer::Initialize(GLFWwindow* window)
 	pipeline.createDescriptorSetLayout(device);
 	pipeline.createGraphicPipeline(device, swapChain);
 	commands.createCommandPool(device);
+	depth.createDepthResources(device, swapChain, verBuffer, texture);
 	texture.createTextureImage(device, pipeline, verBuffer, commands);
 	texture.createTextureImageViews(device);
 	texture.createTexturSampler(device);
@@ -49,7 +50,7 @@ void Renderer::drawFrame(GLFWwindow* window)
 	device.GetDevice().resetFences(*inFlightFence);
 	commands.GetCommandBuffer(frameIndex).reset();
 	uniformBuffer.updateUniformBuffer(frameIndex, swapChain);
-	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline, verBuffer, descriptors);
+	commands.recordCommandBuffer(imageIndex, swapChain, synchronization, pipeline, verBuffer, descriptors, depth);
 
 	vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
 	const vk::SubmitInfo   submitInfo
