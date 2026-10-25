@@ -38,6 +38,12 @@ Le dépôt contient déjà plusieurs dépendances :
 - Le shader compilé dans `shaders/slang.spv`.
 - La texture utilisée par l’application dans `textures/texture.jpg`.
 
+## Télécharger la release
+
+La release **VulkanDemo 1.0.0** est disponible au téléchargement :
+
+- [Télécharger VulkanDemo-1.0.0.zip](https://github.com/Po-ii/VulkanDemo/releases/tag/gold)
+  
 ## Installation
 
 Cloner le dépôt avec Git :
