@@ -14,6 +14,7 @@ class DepthBuffer
 public:
     void createDepthResources(Device const& device, SwapChain const& swapChain, VertexBuffer const& vertBuffer, Texture const& texture);
     vk::Format findDepthFormat(Device const& device) const;
+    void cleanupDepthResources();
 
     vk::raii::Image const& GetDepthImage() const { return depthImage; }
     vk::raii::ImageView const& GetDepthImageView() const { return depthImageView; }

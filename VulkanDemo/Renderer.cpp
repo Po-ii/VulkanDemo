@@ -11,12 +11,12 @@ void Renderer::Initialize(GLFWwindow* window)
 	pipeline.createDescriptorSetLayout(device);
 	pipeline.createGraphicPipeline(device, swapChain, depth);
 	commands.createCommandPool(device);
-	depth.createDepthResources(device, swapChain, verBuffer, texture);
 	texture.createTextureImage(device, pipeline, verBuffer, commands);
 	texture.createTextureImageViews(device);
 	texture.createTexturSampler(device);
 	verBuffer.createVertexBuffer(device, pipeline, commands);
 	verBuffer.createIndexBuffer(device, pipeline, commands);
+	depth.createDepthResources(device, swapChain, verBuffer, texture);
 	uniformBuffer.createUniformBuffer(device, pipeline, synchronization, verBuffer);
 	descriptors.createDescriptorPool(device, synchronization);
 	descriptors.createDescriptorSets(device, pipeline, uniformBuffer, synchronization, texture);
@@ -38,7 +38,9 @@ void Renderer::drawFrame(GLFWwindow* window)
 	auto [result, imageIndex] = swapChain.GetSwapChain().acquireNextImage(UINT64_MAX, *synchronization.GetPresentCompleteSemaphore(frameIndex), nullptr);
 	if (result == vk::Result::eErrorOutOfDateKHR)
 	{
+		depth.cleanupDepthResources();
 		swapChain.recreateSwapChain(window, device, surface, texture);
+		depth.createDepthResources(device, swapChain, verBuffer, texture);
 		return;
 	}
 	if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
@@ -80,13 +82,17 @@ void Renderer::drawFrame(GLFWwindow* window)
 	catch (const vk::OutOfDateKHRError&)
 	{
 		synchronization.SetFramebufferResized(false);
+		depth.cleanupDepthResources();
 		swapChain.recreateSwapChain(window, device, surface, texture);
+		depth.createDepthResources(device, swapChain, verBuffer, texture);
 		return;
 	}
 	if (result == vk::Result::eSuboptimalKHR || synchronization.IsFramebufferResized() )
 	{
 		synchronization.SetFramebufferResized(false);
+		depth.cleanupDepthResources();
 		swapChain.recreateSwapChain(window, device, surface, texture);
+		depth.createDepthResources(device, swapChain, verBuffer, texture);
 	}
 	else
 	{

@@ -35,3 +35,10 @@ vk::Format DepthBuffer::findDepthFormat(Device const& device) const
         vk::FormatFeatureFlagBits::eDepthStencilAttachment, device);
 }
 
+void DepthBuffer::cleanupDepthResources()
+{
+    depthImageView = nullptr;
+    depthImage = nullptr;
+    depthImageMemory = nullptr;
+}
+
