@@ -17,6 +17,7 @@
 #include "VertexBuffer.h"
 #include "UniformBuffer.h"
 #include "DescriptorManager.h"
+#include "Texture.h"
 
 class Renderer
 {
@@ -37,5 +38,6 @@ private:
 	VertexBuffer verBuffer;
 	UniformBuffer uniformBuffer;
 	DescriptorManager descriptors;
+	Texture texture;
 };
 

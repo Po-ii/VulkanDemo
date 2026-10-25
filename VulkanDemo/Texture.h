@@ -11,11 +11,18 @@ class Texture
 {
 public:
 	void createTextureImage(Device const& device, GraphicPipeline const& pipeline, VertexBuffer const& vertBuffer, CommandManager const& commands);
+	void createTextureImageViews(Device const& device);
+	vk::raii::ImageView createImageView(vk::Image const& image, vk::Format format, Device const& device) const;
+	void createTexturSampler(Device const& device);
+
+	vk::raii::ImageView const& GetTextureImageView() const { return textureImageView; }
+	vk::raii::Sampler const& GetTextureSampler() const { return textureSampler; }
 
 private:
 	vk::raii::Image textureImage = nullptr;
 	vk::raii::DeviceMemory textureImageMemory = nullptr;
 	vk::raii::ImageView textureImageView = nullptr;
+	vk::raii::Sampler textureSampler = nullptr;
 
 	std::pair<vk::raii::Image, vk::raii::DeviceMemory> createImage(
 		uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device, VertexBuffer const& vertBuffer);

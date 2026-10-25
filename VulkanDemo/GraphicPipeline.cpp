@@ -75,9 +75,10 @@ void GraphicPipeline::createGraphicPipeline(Device const& device, SwapChain cons
 
 void GraphicPipeline::createDescriptorSetLayout(Device const& device)
 {
-	vk::DescriptorSetLayoutBinding uboLayoutBinding{
-			.binding = 0, .descriptorType = vk::DescriptorType::eUniformBuffer, .descriptorCount = 1, .stageFlags = vk::ShaderStageFlagBits::eVertex };
-	vk::DescriptorSetLayoutCreateInfo layoutInfo{ .bindingCount = 1, .pBindings = &uboLayoutBinding };
+	std::array<vk::DescriptorSetLayoutBinding, 2> bindings{
+			{{.binding = 0, .descriptorType = vk::DescriptorType::eUniformBuffer, .descriptorCount = 1, .stageFlags = vk::ShaderStageFlagBits::eVertex},
+			 {.binding = 1, .descriptorType = vk::DescriptorType::eCombinedImageSampler, .descriptorCount = 1, .stageFlags = vk::ShaderStageFlagBits::eFragment}} };
+	vk::DescriptorSetLayoutCreateInfo layoutInfo{ .bindingCount = static_cast<uint32_t>(bindings.size()), .pBindings = bindings.data() };
 	descriptorSetLayout = vk::raii::DescriptorSetLayout(device.GetDevice(), layoutInfo);
 }
 

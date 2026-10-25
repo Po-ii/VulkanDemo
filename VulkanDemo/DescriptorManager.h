@@ -6,12 +6,13 @@ class Device;
 class GraphicPipeline;
 class UniformBuffer;
 class FrameSynchronizer;
+class Texture;
 
 class DescriptorManager
 {
 public:
 	void createDescriptorPool(Device const& device, FrameSynchronizer const& sync);
-	void createDescriptorSets(Device const& device, GraphicPipeline const& pipeline, UniformBuffer const& uniformBuffer, FrameSynchronizer const& sync);
+	void createDescriptorSets(Device const& device, GraphicPipeline const& pipeline, UniformBuffer const& uniformBuffer, FrameSynchronizer const& sync, Texture const& texture);
 
 	vk::raii::DescriptorSet const& GetDescriptorSet(uint32_t frameIndex) const { return descriptorSets.at(frameIndex); }
 

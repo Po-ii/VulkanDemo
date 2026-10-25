@@ -7,15 +7,18 @@ void Renderer::Initialize(GLFWwindow* window)
 	device.pickPhysicalDevice(instance);
 	device.createLogicalDevice(surface);
 	swapChain.createSwapChain(window, device, surface);
-	swapChain.createImageViews(device);
+	swapChain.createImageViews(device, texture);
 	pipeline.createDescriptorSetLayout(device);
 	pipeline.createGraphicPipeline(device, swapChain);
 	commands.createCommandPool(device);
+	texture.createTextureImage(device, pipeline, verBuffer, commands);
+	texture.createTextureImageViews(device);
+	texture.createTexturSampler(device);
 	verBuffer.createVertexBuffer(device, pipeline, commands);
 	verBuffer.createIndexBuffer(device, pipeline, commands);
 	uniformBuffer.createUniformBuffer(device, pipeline, synchronization, verBuffer);
 	descriptors.createDescriptorPool(device, synchronization);
-	descriptors.createDescriptorSets(device, pipeline, uniformBuffer, synchronization);
+	descriptors.createDescriptorSets(device, pipeline, uniformBuffer, synchronization, texture);
 	commands.createCommandBuffers(device, synchronization);
 	synchronization.createSyncObjects(device, swapChain);
 }
@@ -34,7 +37,7 @@ void Renderer::drawFrame(GLFWwindow* window)
 	auto [result, imageIndex] = swapChain.GetSwapChain().acquireNextImage(UINT64_MAX, *synchronization.GetPresentCompleteSemaphore(frameIndex), nullptr);
 	if (result == vk::Result::eErrorOutOfDateKHR)
 	{
-		swapChain.recreateSwapChain(window, device, surface);
+		swapChain.recreateSwapChain(window, device, surface, texture);
 		return;
 	}
 	if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
@@ -76,13 +79,13 @@ void Renderer::drawFrame(GLFWwindow* window)
 	catch (const vk::OutOfDateKHRError&)
 	{
 		synchronization.SetFramebufferResized(false);
-		swapChain.recreateSwapChain(window, device, surface);
+		swapChain.recreateSwapChain(window, device, surface, texture);
 		return;
 	}
 	if (result == vk::Result::eSuboptimalKHR || synchronization.IsFramebufferResized() )
 	{
 		synchronization.SetFramebufferResized(false);
-		swapChain.recreateSwapChain(window, device, surface);
+		swapChain.recreateSwapChain(window, device, surface, texture);
 	}
 	else
 	{

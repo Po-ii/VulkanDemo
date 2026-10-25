@@ -1,6 +1,7 @@
 #include "SwapChain.h"
 #include "Device.h"
 #include "Surface.h"
+#include "Texture.h"
 
 void SwapChain::createSwapChain(GLFWwindow* window, Device const& device, Surface const& surface)
 {
@@ -34,20 +35,14 @@ void SwapChain::createSwapChain(GLFWwindow* window, Device const& device, Surfac
 	swapChainImages = swapChain.getImages();
 }
 
-void SwapChain::createImageViews(Device const& device)
+void SwapChain::createImageViews(Device const& device, Texture const& texture)
 {
 	assert(swapChainImageViews.empty());
-	vk::ImageViewCreateInfo imageViewCreateInfo
-	{
-		.viewType = vk::ImageViewType::e2D,
-		.format = swapChainSurfaceFormat.format,
-		.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1}
-	};
 
+	swapChainImageViews.reserve(swapChainImages.size());
 	for (auto& image : swapChainImages)
 	{
-		imageViewCreateInfo.image = image;
-		swapChainImageViews.emplace_back(device.GetDevice(), imageViewCreateInfo);
+		swapChainImageViews.emplace_back(texture.createImageView(image, swapChainSurfaceFormat.format, device));
 	}
 }
 
@@ -99,7 +94,7 @@ uint32_t SwapChain::chooseSwapMinImageCount(vk::SurfaceCapabilitiesKHR const& su
 	return minImageCount;
 }
 
-void SwapChain::recreateSwapChain(GLFWwindow* window, Device const& device, Surface const& surface)
+void SwapChain::recreateSwapChain(GLFWwindow* window, Device const& device, Surface const& surface, Texture const& texture)
 {
 	int width = 0, height = 0;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -116,5 +111,5 @@ void SwapChain::recreateSwapChain(GLFWwindow* window, Device const& device, Surf
 	device.GetDevice().waitIdle();
 	cleanupSwapChain();
 	createSwapChain(window, device, surface);
-	createImageViews(device);
+	createImageViews(device, texture);
 }

@@ -6,14 +6,15 @@
 
 class Device;
 class Surface;
+class Texture;
 
 class SwapChain
 {
 public:
 	void createSwapChain(GLFWwindow* window, Device const& device, Surface const& surface);
-	void createImageViews(Device const& device);
+	void createImageViews(Device const& device, Texture const& texture);
 	void cleanupSwapChain();
-	void recreateSwapChain(GLFWwindow* window, Device const& device, Surface const& surface);
+	void recreateSwapChain(GLFWwindow* window, Device const& device, Surface const& surface, Texture const& texture);
 
 	vk::raii::SwapchainKHR const& GetSwapChain() const { return swapChain; }
 	vk::Extent2D GetSwapChainExtent() const { return swapChainExtent; }

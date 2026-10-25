@@ -9,7 +9,7 @@
 void Texture::createTextureImage(Device const& device, GraphicPipeline const& pipeline, VertexBuffer const& vertBuffer, CommandManager const& commands)
 {
     int texWidth, texHeight, texChannels;
-    stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    stbi_uc* pixels = stbi_load("../textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
     vk::DeviceSize imageSize = texWidth * texHeight * 4;
 
     if (!pixels)
@@ -38,6 +38,10 @@ void Texture::createTextureImage(Device const& device, GraphicPipeline const& pi
     commands.endSingleTimeCommands(std::move(commandBuffer), device);
 }
 
+void Texture::createTextureImageViews(Device const& device)
+{
+    textureImageView = createImageView(*textureImage, vk::Format::eR8G8B8A8Srgb, device);
+}
 
 std::pair<vk::raii::Image, vk::raii::DeviceMemory> Texture::createImage(
     uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, Device const& device, VertexBuffer const& vertBuffer)
@@ -116,4 +120,33 @@ void Texture::copyBufferToImage(vk::raii::CommandBuffer& commandBuffer, const vk
         .imageExtent = {width, height, 1} 
     };
     commandBuffer.copyBufferToImage(buffer, image, vk::ImageLayout::eTransferDstOptimal, region);
+}
+
+vk::raii::ImageView Texture::createImageView(vk::Image const& image, vk::Format format, Device const& device) const
+{
+    vk::ImageViewCreateInfo viewInfo
+    {
+      .image = image,
+      .viewType = vk::ImageViewType::e2D,
+      .format = format,
+      .subresourceRange = {.aspectMask = vk::ImageAspectFlagBits::eColor, .baseMipLevel = 0, .levelCount = 1, .baseArrayLayer = 0, .layerCount = 1} 
+    };
+    return vk::raii::ImageView(device.GetDevice(), viewInfo);
+}
+
+void Texture::createTexturSampler(Device const& device)
+{
+    vk::PhysicalDeviceProperties properties = device.GetPhysicalDevice().getProperties();
+    vk::SamplerCreateInfo        samplerInfo{ .magFilter = vk::Filter::eLinear,
+                                             .minFilter = vk::Filter::eLinear,
+                                             .mipmapMode = vk::SamplerMipmapMode::eLinear,
+                                             .addressModeU = vk::SamplerAddressMode::eRepeat,
+                                             .addressModeV = vk::SamplerAddressMode::eRepeat,
+                                             .addressModeW = vk::SamplerAddressMode::eRepeat,
+                                             .mipLodBias = 0.0f,
+                                             .anisotropyEnable = vk::True,
+                                             .maxAnisotropy = properties.limits.maxSamplerAnisotropy,
+                                             .compareEnable = vk::False,
+                                             .compareOp = vk::CompareOp::eAlways };
+    textureSampler = vk::raii::Sampler(device.GetDevice(), samplerInfo);
 }
